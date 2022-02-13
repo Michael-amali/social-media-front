@@ -1,18 +1,31 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+  <div>
+    <Navbar />
+    <LeftSidebar />
+    <v-row>
+      <v-col cols="7">
+        <PostSection />
+      </v-col>
+      <v-col cols="5">
+        <RightSidebar />
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+import LeftSidebar from "../components/LeftSidebar.vue";
+import RightSidebar from "../components/RightSidebar.vue";
+import PostSection from "../components/PostSection.vue";
+import Navbar from "../components/Navbar.vue";
 
 export default {
   name: "Home",
-  components: {
-    HelloWorld,
+
+  components: { LeftSidebar, RightSidebar, PostSection, Navbar },
+  data() {
+    return {};
   },
+  methods: {},
 };
 </script>
