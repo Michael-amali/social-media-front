@@ -64,7 +64,9 @@
               alt="John"
             />
           </v-avatar>
-          <v-toolbar-title class="subtitle-1 pl-2"> John Doe </v-toolbar-title>
+          <v-toolbar-title class="subtitle-1 pl-2">
+            {{ username }}
+          </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn color="black" icon @click="closePreviewPost(singlePost._id)">
             <v-icon>mdi-close</v-icon>
@@ -120,7 +122,7 @@
               />
             </v-avatar>
             <v-toolbar-title class="subtitle-1 pl-2">
-              John Doe
+              {{ username }}
             </v-toolbar-title>
             <v-spacer></v-spacer>
 
@@ -155,7 +157,6 @@
                 x-small
                 color="primary"
                 elevation="0"
-                @click="likePost(post)"
               >
                 <v-icon dark>mdi-thumb-up </v-icon>
               </v-btn>
@@ -171,20 +172,6 @@
       </v-col>
     </v-row>
 
-    <!-- <v-row class="d-flex justify-center">
-      <v-col cols="10">
-        <p>
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Mollitia
-          voluptates, saepe sint officia ipsam rem, dolorum iure itaque beatae
-          accusamus commodi maxime nisi animi fuga nulla quibusdam perspiciatis
-          culpa? Aperiam. Dignissimos exercitationem corporis nulla doloribus
-          aperiam magni, similique quae fuga officia magnam minus fugiat dolore
-          quia voluptatem totam iure aut adipisci. Similique adipisci
-          praesentium velit sint mollitia quae, porro aliquid. Harum officiis
-          error rerum quasi veritatis optio! Ab temporibus numquam non velit
-        </p></v-col
-      >
-    </v-row> -->
     <v-overlay :value="uploadOverlay">
       <v-progress-circular indeterminate size="100"></v-progress-circular>
     </v-overlay>
@@ -216,14 +203,19 @@ export default {
       menuList: [{ title: "Delete" }],
       filename: null,
 
+      username: localStorage.getItem("username"),
+      singleUser: {},
+      coverPicture: "",
       profilePic:
         "https://images.unsplash.com/photo-1549068106-b024baf5062d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80",
-      singleUser: {},
+
+      friendsList: [],
     };
   },
   methods: {
     // Preview post method
     previewPost() {
+      // let userId = localStorage.getItem("userId");
       axios
         .post("http://localhost:4000/api/posts/", {
           userId: this.userId,
@@ -290,6 +282,7 @@ export default {
           // File uploaded successfully
           if (request.readyState === 4 && request.status === 200) {
             let response = JSON.parse(request.responseText);
+            // console.log(response)
             resolve(response);
           }
 
@@ -313,13 +306,12 @@ export default {
 
     // Get all posts timeline
     getAllPosts() {
-      // let userId = localStorage.getItem("userId");
+      // let username = localStorage.getItem("username");
       axios
-        .get(`http://localhost:4000/api/posts/timeline/${this.userId}`)
+        .get(`http://localhost:4000/api/posts/profile/${this.username}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.allPosts = [...res.data];
-            console.log(this.allPosts );
           }
         })
         .catch((err) => console.log(err));
@@ -331,7 +323,6 @@ export default {
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.singlePost = { ...res.data };
-            console.log(this.singlePost)
           }
         })
         .catch((err) => console.log(err));
@@ -369,17 +360,20 @@ export default {
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.singleUser = { ...res.data };
-            // console.log(this.singleUser);
+            console.log(this.singleUser);
           }
         })
         .catch((err) => console.log(err));
     },
 
-    likePost(post) {
+    getFriends() {
       axios
-        .put(`http://localhost:4000/api/posts/${post._id}/like/${this.userId}`)
+        .get(`http://localhost:4000/api/users/friends/${this.userId}`)
         .then((res) => {
-          console.log(res);
+          if (res.status >= 200 && res.status < 400) {
+            this.friendsList = [...res.data];
+            console.log(this.friendsList);
+          }
         })
         .catch((err) => console.log(err));
     },
@@ -388,6 +382,7 @@ export default {
   mounted() {
     this.getAllPosts();
     this.getSingleUser();
+    this.getFriends();
   },
 };
 </script>

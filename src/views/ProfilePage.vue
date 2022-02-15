@@ -1,27 +1,38 @@
 <template>
   <div>
     <div>
-      <v-img :src="require('../assets/blueflowers.jpeg')" height="240"></v-img>
+      <v-img
+        :src="singleUser.coverPicture ? singleUser.coverPicture : coverImage"
+        height="240"
+      ></v-img>
 
       <div>
         <div class="d-flex justify-center mt-n16">
           <v-avatar class="outlined" size="180">
             <v-avatar size="170">
               <v-img
-                lazy-src="https://images.unsplash.com/photo-1554151228-14d9def656e4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=633&q=80"
-                src="https://images.unsplash.com/photo-1554151228-14d9def656e4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=633&q=80"
+                :src="
+                  singleUser.profilePicture
+                    ? singleUser.profilePicture
+                    : profileImage
+                "
               />
             </v-avatar>
           </v-avatar>
         </div>
-        <div class="d-flex justify-center mt-4 title">Emma Watson</div>
+        <div class="d-flex justify-center mt-4 title">
+          {{ singleUser.username ? singleUser.username : "Unknown" }}
+        </div>
+        <div class="d-flex justify-center">
+          {{ singleUser.desc ? singleUser.desc : "Unknown" }}
+        </div>
       </div>
     </div>
     <Navbar />
     <LeftSidebar />
     <v-row>
       <v-col cols="7">
-        <PostSection />
+        <PostSectionProfile />
       </v-col>
       <v-col cols="5">
         <div class="pa-2">
@@ -30,15 +41,21 @@
               <div class="title">User Information</div>
               <div>
                 <span class="mr-4">City :</span
-                ><span class="subtitle-1 grey--text">Madrid</span>
+                ><span class="subtitle-1 grey--text">
+                  {{ singleUser.city ? singleUser.city : "unknown" }}
+                </span>
               </div>
               <div>
                 <span class="mr-4">From :</span
-                ><span class="subtitle-1 grey--text">Berlin, Germany</span>
+                ><span class="subtitle-1 grey--text">{{
+                  singleUser.from ? singleUser.from : "unknown"
+                }}</span>
               </div>
               <div>
                 <span class="mr-4">Relationship :</span
-                ><span class="subtitle-1 grey--text">Single</span>
+                ><span class="subtitle-1 grey--text">{{
+                  singleUser.relationship ? singleUser.relationship : "unknown"
+                }}</span>
               </div>
             </v-flex>
           </v-layout>
@@ -46,56 +63,30 @@
             <v-flex>
               <div class="title">User friends</div>
               <v-row class="p-2">
-                <v-col cols="4" class="">
-                  <v-card height="100">
-                    <v-img
-                      height="130"
-                      width="130"
-                      src="https://images.unsplash.com/photo-1549068106-b024baf5062d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80"
-                    ></v-img>
-                    <div class="">Usernajbjkbkjjhbv</div></v-card
+                <v-col
+                  cols="4"
+                  class=""
+                  v-for="friend in this.friendsList"
+                  :key="friend._id"
+                >
+                  <v-card
+                    height="150"
+                    @click="goToFriendProfile(friend.username)"
                   >
+                    <v-img
+                      :src="
+                        friend.profilePicture
+                          ? friend.profilePicture
+                          : profileImage
+                      "
+                      alt="John"
+                      height="160"
+                    ></v-img>
+                  </v-card>
+                  <div class="">
+                    {{ friend.username ? friend.userId : "unkwown" }}
+                  </div>
                 </v-col>
-                <v-col cols="4" class="">
-                  <v-card height="100">
-                    <v-img
-                      height="130"
-                      width="130"
-                      src="https://images.unsplash.com/photo-1549068106-b024baf5062d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80"
-                    ></v-img
-                    ><span>Usernamhbvhhvhve</span>
-                  </v-card></v-col
-                >
-                <v-col cols="4" class="mb-6">
-                  <v-card height="100">
-                    <v-img
-                      height="130"
-                      width="130"
-                      src="https://images.unsplash.com/photo-1549068106-b024baf5062d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80"
-                    ></v-img>
-                    <span>Username</span></v-card
-                  ></v-col
-                >
-                <v-col cols="4" class="mb-6">
-                  <v-card height="100">
-                    <v-img
-                      height="130"
-                      width="130"
-                      src="https://images.unsplash.com/photo-1549068106-b024baf5062d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80"
-                    ></v-img>
-                    <span>Username</span></v-card
-                  ></v-col
-                >
-                <v-col cols="4" class="mb-6">
-                  <v-card height="100">
-                    <v-img
-                      height="130"
-                      width="130"
-                      src="https://images.unsplash.com/photo-1549068106-b024baf5062d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80"
-                    ></v-img>
-                    <span>Username</span>
-                  </v-card></v-col
-                >
               </v-row>
             </v-flex>
           </v-layout>
@@ -149,16 +140,59 @@
 
 <script>
 import LeftSidebar from "../components/LeftSidebar.vue";
-import PostSection from "../components/PostSection.vue";
+import PostSectionProfile from "../components/PostSectionProfile.vue";
 import Navbar from "../components/Navbar.vue";
+import axios from "axios";
 
 export default {
   name: "ProfilePage",
 
-  components: { LeftSidebar, PostSection, Navbar },
+  components: { LeftSidebar, PostSectionProfile, Navbar },
   data() {
-    return {};
+    return {
+      singleUser: {},
+      userId: localStorage.getItem("userId"),
+      username: this.route.username,
+
+      coverImage: require("../assets/blueflowers.jpeg"),
+      profileImage:
+        "https://images.unsplash.com/photo-1549068106-b024baf5062d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80",
+      friendsList: [],
+    };
   },
-  methods: {},
+  methods: {
+    getSingleUser() {
+      axios
+        .get(
+          `http://localhost:4000/api/users/find?userId=${this.userId}&username=${this.username}`
+        )
+        .then((res) => {
+          if (res.status >= 200 && res.status < 400) {
+            this.singleUser = { ...res.data };
+            console.log(this.singleUser);
+          }
+        })
+        .catch((err) => console.log(err));
+    },
+
+    getFriends() {
+      axios
+        .get(`http://localhost:4000/api/users/friends/${this.userId}`)
+        .then((res) => {
+          if (res.status >= 200 && res.status < 400) {
+            this.friendsList = [...res.data];
+            console.log(this.friendsList);
+          }
+        })
+        .catch((err) => console.log(err));
+    },
+    goToFriendProfile(username) {
+      this.$router.push(`/profile/${username}`);
+    },
+  },
+  mounted() {
+    this.getSingleUser();
+    this.getFriends();
+  },
 };
 </script>

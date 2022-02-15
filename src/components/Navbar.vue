@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-app-bar flat app fixed clipped-right clipped-left color="" clipped>
-      <h2>Legends</h2>
+      <h2 @click="goToHome" class="cursor-pointer">Legends</h2>
       <v-spacer></v-spacer>
       <v-row>
         <v-col cols="12">
@@ -75,6 +75,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "Navbar",
 
@@ -83,6 +84,9 @@ export default {
     return {
       search: null,
       menuList: [{ title: "Profile" }, { title: "Log Out" }],
+      username: localStorage.getItem("username"),
+      userId: localStorage.getItem("userId"),
+      singleUser: {},
     };
   },
   methods: {
@@ -90,7 +94,10 @@ export default {
       this.$router.push("/login");
     },
     goToProfile() {
-      this.$router.push("/profile");
+      this.$router.push(`/profile/${this.username}`);
+    },
+    goToHome() {
+      this.$router.push("/");
     },
     popUpDrawer(item) {
       if (item.title === "Log Out") {
@@ -103,6 +110,29 @@ export default {
       localStorage.clear();
       this.$router.push("/login");
     },
+
+    getSingleUser() {
+      axios
+        .get(
+          `http://localhost:4000/api/users/find?userId=${this.userId}&username=${this.username}`
+        )
+        .then((res) => {
+          if (res.status >= 200 && res.status < 400) {
+            this.singleUser = { ...res.data };
+          }
+        })
+        .catch((err) => console.log(err));
+    },
+  },
+
+  mounted() {
+    this.getSingleUser();
   },
 };
 </script>
+
+<style scoped>
+.cursor-pointer:hover {
+  cursor: pointer;
+}
+</style>

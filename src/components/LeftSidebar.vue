@@ -78,7 +78,7 @@ export default {
   data() {
     return {
       drawer: false,
-      group: null
+      group: null,
     };
   },
   watch: {

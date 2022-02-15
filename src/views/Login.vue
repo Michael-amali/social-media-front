@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fill-height>
     <v-row>
       <v-col>
         <v-card flat outlined>
@@ -61,7 +61,7 @@
                         <span>Not registered yet?</span
                         ><span
                           @click="goToRegister()"
-                          class="ml-2 white primary--text"
+                          class="ml-2 white primary--text cursor-pointer"
                           >Register here</span
                         >
                       </v-col>
@@ -148,16 +148,22 @@ export default {
         })
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
-            localStorage.setItem("token", res.data.token);
+            localStorage.setItem("token", res.data.accessToken);
             localStorage.setItem("email", res.data.email);
             localStorage.setItem("username", res.data.username);
+            localStorage.setItem("userId", res.data._id);
             this.$router.push("/");
+            location.reload();
           }
         })
         .catch((err) => console.log(err));
     },
-
-
   },
 };
 </script>
+
+<style scoped>
+.cursor-pointer:hover {
+  cursor: pointer;
+}
+</style>

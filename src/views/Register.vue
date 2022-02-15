@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fill-height>
     <v-row>
       <v-col>
         <v-card flat outlined>
@@ -65,8 +65,8 @@
                         <span>Already have an Account?</span
                         ><span
                           @click="goToLogin()"
-                          class="ml-2 white primary--text"
-                          >Sign In</span
+                          class="ml-2 white primary--text cursor-pointer"
+                          >Login</span
                         >
                       </v-col>
                     </v-container>
@@ -116,6 +116,14 @@ export default {
       signUpEmail: "",
       signUpPassword: "",
       signUpPasswordShow: false,
+      signUpEmailRules: [
+        (value) => !!value || "E-mail is required",
+        (value) => /.+@.+\..+/.test(value) || "E-mail must be valid",
+      ],
+      signUpPasswordRules: [
+        (value) => !!value || "Password is required",
+        // (value) => value > 5 || "Password must be valid",
+      ],
     };
   },
   methods: {
@@ -139,3 +147,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.cursor-pointer:hover {
+  cursor: pointer;
+}
+</style>
