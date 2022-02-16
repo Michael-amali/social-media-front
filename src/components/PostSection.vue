@@ -99,92 +99,153 @@
       </v-card>
     </v-dialog>
 
-    <!-- main post -->
+    <!-- MAIN post -->
     <v-row class="d-flex justify-center">
       <v-col
-        class="py-6"
+        class="pb-6"
         cols="12"
         v-for="post in this.allPosts"
         :key="post._id"
       >
-        <v-card>
-          <v-app-bar flat color="white">
-            <v-avatar size="40">
-              <img
-                :src="
-                  singleUser.profilePicture
-                    ? singleUser.profilePicture
-                    : profilePic
-                "
-                alt="John"
-              />
-            </v-avatar>
-            <v-toolbar-title class="subtitle-1 pl-2">
-              John Doe
-            </v-toolbar-title>
-            <v-spacer></v-spacer>
+        <!-- friends posts -->
+        <v-col class="pa-0" v-for="friend in friendsList" :key="friend._id">
+          <v-col class="pa-0" v-if="post.userId === friend._id">
+            <v-card>
+              <v-app-bar flat color="white">
+                <v-avatar size="40">
+                  <img
+                    :src="
+                      friend.profilePicture ? friend.profilePicture : profilePic
+                    "
+                    alt="John"
+                  />
+                </v-avatar>
+                <v-toolbar-title class="subtitle-1 pl-2">
+                  {{ friend.username }}
+                </v-toolbar-title>
+                <v-spacer></v-spacer>
 
-            <v-menu left bottom offset-y>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn icon v-bind="attrs" v-on="on" color="black">
-                  <v-icon>mdi-dots-vertical</v-icon>
-                </v-btn>
-              </template>
+                <v-menu left bottom offset-y>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn icon v-bind="attrs" v-on="on" color="black">
+                      <v-icon>mdi-dots-vertical</v-icon>
+                    </v-btn>
+                  </template>
 
-              <v-list>
-                <v-list-item
-                  v-for="item in menuList"
-                  :key="item.title"
-                  @click="popUpDrawer(item, post._id)"
+                  <v-list>
+                    <v-list-item
+                      v-for="item in menuList"
+                      :key="item.title"
+                      @click="popUpDrawer(item, post._id)"
+                    >
+                      <v-list-item-title> {{ item.title }}</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </v-app-bar>
+              <v-card-text class="py-0">{{ post.desc }}</v-card-text>
+              <v-card-text class="pb-0">
+                <v-img max-height="400" :src="post.img"></v-img>
+              </v-card-text>
+              <v-card-actions>
+                <div class="text-center">
+                  <v-btn
+                    class="mx-3"
+                    fab
+                    dark
+                    x-small
+                    color="primary"
+                    elevation="0"
+                    @click="likePost(post)"
+                  >
+                    <v-icon dark>mdi-thumb-up </v-icon>
+                  </v-btn>
+                  <v-btn
+                    class="mr-3"
+                    fab
+                    dark
+                    x-small
+                    color="red"
+                    elevation="0"
+                  >
+                    <v-icon dark> mdi-heart </v-icon>
+                  </v-btn>
+                  <span class="">{{ post.likes.length }} people like it</span>
+                  <span class="ml-16"></span><span class="ml-16"></span>
+                  <span class="ml-16">Comments</span>
+                </div>
+              </v-card-actions>
+            </v-card>
+          </v-col>
+        </v-col>
+
+        <!-- current user posts -->
+        <v-col class="pa-0" v-if="post.userId === $store.state.userId">
+          <v-card>
+            <v-app-bar flat color="white">
+              <v-avatar size="40">
+                <img
+                  :src="
+                    singleUser.profilePicture
+                      ? singleUser.profilePicture
+                      : profilePic
+                  "
+                  alt="John"
+                />
+              </v-avatar>
+              <v-toolbar-title class="subtitle-1 pl-2">
+                {{ singleUser.username }}
+              </v-toolbar-title>
+              <v-spacer></v-spacer>
+
+              <v-menu left bottom offset-y>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn icon v-bind="attrs" v-on="on" color="black">
+                    <v-icon>mdi-dots-vertical</v-icon>
+                  </v-btn>
+                </template>
+
+                <v-list>
+                  <v-list-item
+                    v-for="item in menuList"
+                    :key="item.title"
+                    @click="popUpDrawer(item, post._id)"
+                  >
+                    <v-list-item-title> {{ item.title }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </v-app-bar>
+            <v-card-text class="py-0">{{ post.desc }}</v-card-text>
+            <v-card-text class="pb-0">
+              <v-img max-height="400" :src="post.img"></v-img>
+            </v-card-text>
+            <v-card-actions>
+              <div class="text-center">
+                <v-btn
+                  class="mx-3"
+                  fab
+                  dark
+                  x-small
+                  color="primary"
+                  elevation="0"
+                  @click="likePost(post)"
                 >
-                  <v-list-item-title> {{ item.title }}</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </v-app-bar>
-          <v-card-text class="py-0">{{ post.desc }}</v-card-text>
-          <v-card-text class="pb-0">
-            <v-img max-height="400" :src="post.img"></v-img>
-          </v-card-text>
-          <v-card-actions>
-            <div class="text-center">
-              <v-btn
-                class="mx-3"
-                fab
-                dark
-                x-small
-                color="primary"
-                elevation="0"
-                @click="likePost(post)"
-              >
-                <v-icon dark>mdi-thumb-up </v-icon>
-              </v-btn>
-              <v-btn class="mr-3" fab dark x-small color="red" elevation="0">
-                <v-icon dark> mdi-heart </v-icon>
-              </v-btn>
-              <span class="">{{ post.likes.length }} people like it</span>
-              <span class="ml-16"></span><span class="ml-16"></span>
-              <span class="ml-16">Comments</span>
-            </div>
-          </v-card-actions>
-        </v-card>
+                  <v-icon dark>mdi-thumb-up </v-icon>
+                </v-btn>
+                <v-btn class="mr-3" fab dark x-small color="red" elevation="0">
+                  <v-icon dark> mdi-heart </v-icon>
+                </v-btn>
+                <span class="">{{ post.likes.length }} people like it</span>
+                <span class="ml-16"></span><span class="ml-16"></span>
+                <span class="ml-16">Comments</span>
+              </div>
+            </v-card-actions>
+          </v-card>
+        </v-col>
       </v-col>
     </v-row>
 
-    <!-- <v-row class="d-flex justify-center">
-      <v-col cols="10">
-        <p>
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Mollitia
-          voluptates, saepe sint officia ipsam rem, dolorum iure itaque beatae
-          accusamus commodi maxime nisi animi fuga nulla quibusdam perspiciatis
-          culpa? Aperiam. Dignissimos exercitationem corporis nulla doloribus
-          aperiam magni, similique quae fuga officia magnam minus fugiat dolore
-          quia voluptatem totam iure aut adipisci. Similique adipisci
-          praesentium velit sint mollitia quae, porro aliquid. Harum officiis
-          error rerum quasi veritatis optio! Ab temporibus numquam non velit
-        </p></v-col
-      >
-    </v-row> -->
     <v-overlay :value="uploadOverlay">
       <v-progress-circular indeterminate size="100"></v-progress-circular>
     </v-overlay>
@@ -217,8 +278,10 @@ export default {
       filename: null,
 
       profilePic:
-        "https://images.unsplash.com/photo-1549068106-b024baf5062d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
       singleUser: {},
+      friendsList: [],
+      allPostDetails: [],
     };
   },
   methods: {
@@ -242,7 +305,7 @@ export default {
     },
 
     continueToPost(post) {
-      this.allPosts.push(post);
+      this.allPosts.unshift(post);
       this.previewDialog = false;
       this.filename = null;
       this.descriptionPost = "";
@@ -313,13 +376,12 @@ export default {
 
     // Get all posts timeline
     getAllPosts() {
-      // let userId = localStorage.getItem("userId");
       axios
         .get(`http://localhost:4000/api/posts/timeline/${this.userId}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.allPosts = [...res.data];
-            console.log(this.allPosts );
+            console.log(this.allPosts, "allPost at timeline");
           }
         })
         .catch((err) => console.log(err));
@@ -331,7 +393,7 @@ export default {
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.singlePost = { ...res.data };
-            console.log(this.singlePost)
+            console.log(this.singlePost);
           }
         })
         .catch((err) => console.log(err));
@@ -344,7 +406,6 @@ export default {
         }
       });
 
-      // let userId = localStorage.getItem("userId");
       axios
         .delete(`http://localhost:4000/api/posts/${postId}/${this.userId}`)
         .then((res) => {
@@ -369,7 +430,7 @@ export default {
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.singleUser = { ...res.data };
-            // console.log(this.singleUser);
+            console.log(this.singleUser, "singleUSER in timeline");
           }
         })
         .catch((err) => console.log(err));
@@ -383,11 +444,37 @@ export default {
         })
         .catch((err) => console.log(err));
     },
+
+    getFriends() {
+      axios
+        .get(`http://localhost:4000/api/users/friends/${this.userId}`)
+        .then((res) => {
+          if (res.status >= 200 && res.status < 400) {
+            this.friendsList = [...res.data];
+            console.log(this.friendsList, "friendlist");
+          }
+        })
+        .catch((err) => console.log(err));
+    },
+
+    // getPostDetails() {
+    //   this.allPosts.forEach((post) => {
+    //     this.friendsList.forEach((friend) => {
+    //       console.log(post, friend);
+    //       if (friend._id === post.userId) {
+    //         this.allPostDetails.push({ post, friend });
+    //       }
+    //     });
+    //   });
+    // },
   },
 
   mounted() {
     this.getAllPosts();
     this.getSingleUser();
+    this.getFriends();
+    // this.getPostDetails();
+    console.log(this.userId, "id");
   },
 };
 </script>

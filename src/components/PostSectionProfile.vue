@@ -1,6 +1,10 @@
 <template>
   <v-container class="pl-10">
-    <v-row class="d-flex justify-center">
+    <!-- Show form to make a post if condition is met -->
+    <v-row
+      class="d-flex justify-center"
+      v-if="this.userId === this.currentUserId"
+    >
       <v-col cols="12">
         <v-card>
           <v-card-text class="pb-0">
@@ -102,7 +106,7 @@
     </v-dialog>
 
     <!-- main post -->
-    <v-row class="d-flex justify-center">
+    <v-row class="d-flex justify-center" v-if="this.allPosts.length > 0">
       <v-col
         class="py-6"
         cols="12"
@@ -171,6 +175,13 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-row v-else>
+      <v-col>
+        <v-card>
+          <v-card-text class="title">Nothing has been posted</v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
 
     <v-overlay :value="uploadOverlay">
       <v-progress-circular indeterminate size="100"></v-progress-circular>
@@ -203,11 +214,12 @@ export default {
       menuList: [{ title: "Delete" }],
       filename: null,
 
-      username: localStorage.getItem("username"),
+      username: this.$route.params.username,
+      currentUserId: this.$route.params.id,
       singleUser: {},
       coverPicture: "",
       profilePic:
-        "https://images.unsplash.com/photo-1549068106-b024baf5062d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
 
       friendsList: [],
     };
@@ -215,7 +227,6 @@ export default {
   methods: {
     // Preview post method
     previewPost() {
-      // let userId = localStorage.getItem("userId");
       axios
         .post("http://localhost:4000/api/posts/", {
           userId: this.userId,
@@ -282,7 +293,6 @@ export default {
           // File uploaded successfully
           if (request.readyState === 4 && request.status === 200) {
             let response = JSON.parse(request.responseText);
-            // console.log(response)
             resolve(response);
           }
 
@@ -304,11 +314,12 @@ export default {
       });
     },
 
-    // Get all posts timeline
+    // Get all current user posts
     getAllPosts() {
-      // let username = localStorage.getItem("username");
       axios
-        .get(`http://localhost:4000/api/posts/profile/${this.username}`)
+        .get(
+          `http://localhost:4000/api/posts/profile/${this.username}/${this.currentUserId}`
+        )
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.allPosts = [...res.data];
@@ -335,7 +346,6 @@ export default {
         }
       });
 
-      // let userId = localStorage.getItem("userId");
       axios
         .delete(`http://localhost:4000/api/posts/${postId}/${this.userId}`)
         .then((res) => {
@@ -354,9 +364,7 @@ export default {
 
     getSingleUser() {
       axios
-        .get(
-          `http://localhost:4000/api/users/find?userId=${this.userId}&username=${this.username}`
-        )
+        .get(`http://localhost:4000/api/users/find?username=${this.username}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.singleUser = { ...res.data };

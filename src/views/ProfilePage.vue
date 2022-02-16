@@ -20,7 +20,7 @@
             </v-avatar>
           </v-avatar>
         </div>
-        <div class="d-flex justify-center mt-4 title">
+        <div class="d-flex justify-center mt-4 title text-capitalize">
           {{ singleUser.username ? singleUser.username : "Unknown" }}
         </div>
         <div class="d-flex justify-center">
@@ -36,7 +36,33 @@
       </v-col>
       <v-col cols="5">
         <div class="pa-2">
-          <v-layout class="">
+          <v-layout v-if="this.userId !== this.currentUserId">
+            <v-flex class="">
+              <div
+                v-if="
+                  this.singleUser.followers
+                    ? this.singleUser.followers.includes(this.userId)
+                    : ''
+                "
+              >
+                <v-btn
+                  @click="unFollowUser"
+                  color="deep-purple lighten-2"
+                  class="pa-3 white--text text-capitalize"
+                  >Unfollow <v-icon right>mdi-plus</v-icon></v-btn
+                >
+              </div>
+              <div v-else>
+                <v-btn
+                  @click="followUser"
+                  color="deep-purple lighten-2"
+                  class="pa-3 white--text text-capitalize"
+                  >Follow<v-icon right>mdi-plus</v-icon></v-btn
+                >
+              </div>
+            </v-flex>
+          </v-layout>
+          <v-layout class="mt-5">
             <v-flex>
               <div class="title">User Information</div>
               <div>
@@ -59,10 +85,11 @@
               </div>
             </v-flex>
           </v-layout>
+
           <v-layout class="mt-5">
             <v-flex>
               <div class="title">User friends</div>
-              <v-row class="p-2">
+              <v-row class="p-2" v-if="this.friendsList.length > 0">
                 <v-col
                   cols="4"
                   class=""
@@ -71,7 +98,7 @@
                 >
                   <v-card
                     height="150"
-                    @click="goToFriendProfile(friend.username)"
+                    @click="goToFriendProfile(friend.username, friend._id)"
                   >
                     <v-img
                       :src="
@@ -83,10 +110,13 @@
                       height="160"
                     ></v-img>
                   </v-card>
-                  <div class="">
-                    {{ friend.username ? friend.userId : "unkwown" }}
+                  <div class="mt-2 font-weight-bold d-flex justify-center text-capitalize">
+                    {{ friend.username ? friend.username : "unkwown" }}
                   </div>
                 </v-col>
+              </v-row>
+              <v-row v-else>
+                <v-col> No friends </v-col>
               </v-row>
             </v-flex>
           </v-layout>
@@ -94,19 +124,31 @@
 
         <div class="pa-2">
           <v-layout class="mt-6">
-            <div class="title">JOHN DOE</div>
+            <div class="title text-capitalize">
+              {{ singleUser ? singleUser.username : "Unknown" }}
+            </div>
           </v-layout>
           <v-layout>
             <v-flex>
               <v-layout>
-                <div class="subtitle-2">882</div>
-                <div class="subtitle-2 ml-1 grey--text">Photos</div>
+                <div class="subtitle-2">{{ allPosts ? allPosts.length : 0}}</div>
+                <div class="subtitle-2 ml-1 grey--text">Posts</div>
               </v-layout>
             </v-flex>
             <v-flex>
               <v-layout>
-                <div class="subtitle-2">527k</div>
+                <div class="subtitle-2">
+                  {{ singleUser ? singleUser.followings.length : 0 }}
+                </div>
                 <div class="subtitle-2 ml-1 grey--text">Followers</div>
+              </v-layout>
+            </v-flex>
+                        <v-flex>
+              <v-layout>
+                <div class="subtitle-2">
+                  {{ singleUser ? singleUser.followers.length : 0 }}
+                </div>
+                <div class="subtitle-2 ml-1 grey--text">Followings</div>
               </v-layout>
             </v-flex>
           </v-layout>
@@ -152,24 +194,23 @@ export default {
     return {
       singleUser: {},
       userId: localStorage.getItem("userId"),
-      username: this.route.username,
+      username: this.$route.params.username,
+      currentUserId: this.$route.params.id,
 
       coverImage: require("../assets/blueflowers.jpeg"),
       profileImage:
-        "https://images.unsplash.com/photo-1549068106-b024baf5062d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80",
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
       friendsList: [],
+      allPosts: [],
     };
   },
   methods: {
     getSingleUser() {
       axios
-        .get(
-          `http://localhost:4000/api/users/find?userId=${this.userId}&username=${this.username}`
-        )
+        .get(`http://localhost:4000/api/users/find?username=${this.username}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.singleUser = { ...res.data };
-            console.log(this.singleUser);
           }
         })
         .catch((err) => console.log(err));
@@ -177,22 +218,74 @@ export default {
 
     getFriends() {
       axios
-        .get(`http://localhost:4000/api/users/friends/${this.userId}`)
+        .get(
+          `http://localhost:4000/api/users/friends/${
+            this.userId === this.currentUserId
+              ? this.userId
+              : this.currentUserId
+          }`
+        )
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.friendsList = [...res.data];
-            console.log(this.friendsList);
           }
         })
         .catch((err) => console.log(err));
     },
-    goToFriendProfile(username) {
-      this.$router.push(`/profile/${username}`);
+
+    goToFriendProfile(username, personId) {
+      this.$router.push(`/profile/${username}/${personId}`);
+      location.reload();
+    },
+
+    followUser() {
+      axios
+        .put(`http://localhost:4000/api/users/${this.currentUserId}/follow`, {
+          userId: this.userId,
+        })
+        .then((res) => {
+          console.log(res);
+          location.reload();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    unFollowUser() {
+      axios
+        .put(`http://localhost:4000/api/users/${this.currentUserId}/unfollow`, {
+          userId: this.userId,
+        })
+        .then((res) => {
+          console.log(res);
+          location.reload();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+    // Get all current user posts
+    getAllPosts() {
+      axios
+        .get(
+          `http://localhost:4000/api/posts/profile/${this.username}/${this.currentUserId}`
+        )
+        .then((res) => {
+          if (res.status >= 200 && res.status < 400) {
+            this.allPosts = [...res.data];
+            console.log(this.allPosts.length)
+          }
+        })
+        .catch((err) => console.log(err));
     },
   },
   mounted() {
     this.getSingleUser();
     this.getFriends();
+    this.getAllPosts();
   },
 };
 </script>
+
+<style scoped></style>

@@ -29,7 +29,7 @@ const routes = [
     component: Register,
   },
   {
-    path: "/profile/:username",
+    path: "/profile/:username/:id",
     name: "ProfilePage",
     component: ProfilePage,
   },

@@ -38,7 +38,7 @@
         <span class="mr-4">
           <v-badge bordered right color="green" offset-x="15" offset-y="15">
             <v-avatar size="50">
-<v-img src="https://cdn.vuetifyjs.com/images/lists/3.jpg"></v-img>
+              <v-img src="https://cdn.vuetifyjs.com/images/lists/3.jpg"></v-img>
             </v-avatar> </v-badge
         ></span>
         <span class="subtitle-1">Pamela Kim </span>
