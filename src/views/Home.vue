@@ -3,10 +3,10 @@
     <Navbar />
     <LeftSidebar />
     <v-row>
-      <v-col cols="7">
+      <v-col xs="12" sm="8" md="7">
         <PostSection />
       </v-col>
-      <v-col cols="5">
+      <v-col xs="12" sm="4" md="5">
         <RightSidebar />
       </v-col>
     </v-row>

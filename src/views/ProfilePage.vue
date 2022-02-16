@@ -31,10 +31,10 @@
     <Navbar />
     <LeftSidebar />
     <v-row>
-      <v-col cols="7">
+      <v-col xs="12" sm="8" md="7">
         <PostSectionProfile />
       </v-col>
-      <v-col cols="5">
+      <v-col xs="12" sm="4" md="5">
         <div class="pa-2">
           <v-layout v-if="this.userId !== this.currentUserId">
             <v-flex class="">
@@ -91,7 +91,11 @@
               <div class="title">User friends</div>
               <v-row class="p-2" v-if="this.friendsList.length > 0">
                 <v-col
-                  cols="4"
+                cols="4"
+                  xs="12"
+                  sm="6"
+                  md="4"
+
                   class=""
                   v-for="friend in this.friendsList"
                   :key="friend._id"
@@ -110,7 +114,9 @@
                       height="160"
                     ></v-img>
                   </v-card>
-                  <div class="mt-2 font-weight-bold d-flex justify-center text-capitalize">
+                  <div
+                    class="mt-2 font-weight-bold d-flex justify-center text-capitalize"
+                  >
                     {{ friend.username ? friend.username : "unkwown" }}
                   </div>
                 </v-col>
@@ -131,7 +137,9 @@
           <v-layout>
             <v-flex>
               <v-layout>
-                <div class="subtitle-2">{{ allPosts ? allPosts.length : 0}}</div>
+                <div class="subtitle-2">
+                  {{ allPosts ? allPosts.length : 0 }}
+                </div>
                 <div class="subtitle-2 ml-1 grey--text">Posts</div>
               </v-layout>
             </v-flex>
@@ -143,7 +151,7 @@
                 <div class="subtitle-2 ml-1 grey--text">Followers</div>
               </v-layout>
             </v-flex>
-                        <v-flex>
+            <v-flex>
               <v-layout>
                 <div class="subtitle-2">
                   {{ singleUser ? singleUser.followers.length : 0 }}
@@ -274,7 +282,7 @@ export default {
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.allPosts = [...res.data];
-            console.log(this.allPosts.length)
+            console.log(this.allPosts.length);
           }
         })
         .catch((err) => console.log(err));

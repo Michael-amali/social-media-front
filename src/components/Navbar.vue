@@ -23,18 +23,18 @@
         dark
         depressed
         color="#E7596F"
-        class="text-none mr-5"
+        class="text-none mr-5 hidden-sm-and-down"
         @click="goToLogin()"
       >
         <span class="mr-2">Login </span>
       </v-btn>
-      <v-btn dark depressed color="#E7596F" class="text-none mr-5">
+      <v-btn dark depressed color="#E7596F" class="text-none mr-5 hidden-sm-and-down">
         <span class="mr-2"> Sign Up </span>
       </v-btn>
-      <v-btn icon class="mr-2">
+      <v-btn icon class="mr-2 hidden-sm-and-down">
         <v-icon>mdi-email-outline</v-icon>
       </v-btn>
-      <v-btn icon class="mr-5">
+      <v-btn icon class="mr-5 hidden-sm-and-down">
         <v-icon>mdi-heart-outline</v-icon>
       </v-btn>
 
