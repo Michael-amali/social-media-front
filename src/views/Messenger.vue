@@ -84,7 +84,7 @@
         <!-- Online friends -->
         <v-col> Online Friends 
             <v-row>
-                            <v-col class="pa-3">
+              <v-col class="pa-3">
               <div>
                 <div class="py-5">
                   <span class="mr-4">
@@ -147,6 +147,7 @@
 <script>
 import Navbar from "../components/Navbar.vue";
 import Message from "../components/Message.vue";
+import axios from "axios"
 
 export default {
   name: "Messenger",
@@ -156,9 +157,37 @@ export default {
     return {
       searchTerm: "",
       own: true,
+      userId: localStorage.getItem("userId"),
+      conversations: [],
+      friendId: "",
     };
   },
-  methods: {},
+  methods: {
+    getConversations(){
+      axios.get(`http://localhost:4000/api/conversations/${this.userId}`).then((res)=>{
+        this.conversations = [...res.data];
+        console.log(this.conversations)
+        // this.getUser();
+      }).catch((err) => console.log(err));
+    },
+    // getFriend(){
+      
+    // },
+
+    getUser(){
+      this.friendId = this.conversations.members.find((person)=> person !== this.userId);
+
+      axios.get(`http://localhost:4000/api/users/find?userId=${this.friendId}`).then((res)=>{
+        console.log(res.data)
+      }).catch((err) => console.log(err));
+
+  },
+
+    mounted(){
+      this.getConversations();
+      // this.getUser()
+    }
+  }
 };
 </script>
 
