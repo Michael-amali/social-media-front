@@ -1,30 +1,82 @@
 <template>
   <div>
     <div>
-      <v-img
-        :src="singleUser.coverPicture ? singleUser.coverPicture : coverImage"
-        height="240"
-      ></v-img>
+      <div style="position: relative; left: 0; top: 0">
+        <v-img
+          class="main-img"
+          :src="!!singleUser.coverPicture ? singleUser.coverPicture : coverImage"
+          height="240"
+        ></v-img>
+        <div class="sub-icon">
+          <v-btn
+            small
+            fab
+            @click="editCoverPicture()"
+            v-if="this.userId === this.currentUserId"
+            ><v-icon>mdi-camera</v-icon>
+            <input
+              ref="uploaderCover"
+              class="d-none"
+              type="file"
+              @change="onFileChanged"
+            />
+          </v-btn>
+        </div>
+      </div>
 
       <div>
-        <div class="d-flex justify-center mt-n16">
+        <!-- Editable profile picture -->
+        <!-- 1. Create the button that will be clicked to select a file -->
+        <div
+          class="d-flex justify-center mt-n16"
+          v-if="this.userId === this.currentUserId"
+        >
+          <v-badge
+            bordered
+            right
+            bottom
+            color="blue"
+            icon="mdi-camera"
+            offset-x="25"
+            offset-y="55"
+          >
+            <v-avatar class="outlined cursor-pointer" size="180">
+              <v-avatar size="170">
+                <v-img
+                  @click="editProfilePicture"
+                  :loading="isSelecting"
+                  class="cursor-pointer"
+                  :src="!!singleUser.profilePicture ? singleUser.profilePicture : profileImage"
+                />
+              </v-avatar>
+            </v-avatar>
+          </v-badge>
+
+          <!-- 2. Create a File Input that will be hidden but triggered with JavaScript -->
+          <input
+            ref="uploaderProfile"
+            class="d-none"
+            type="file"
+            @change="onFileChanged"
+          />
+        </div>
+
+        <!-- Not editable profile picture -->
+        <div class="d-flex justify-center mt-n16" v-else>
           <v-avatar class="outlined" size="180">
             <v-avatar size="170">
               <v-img
-                :src="
-                  singleUser.profilePicture
-                    ? singleUser.profilePicture
-                    : profileImage
-                "
+                :src="!!singleUser.profilePicture ? singleUser.profilePicture : profileImage"
               />
             </v-avatar>
           </v-avatar>
         </div>
+
         <div class="d-flex justify-center mt-4 title text-capitalize">
-          {{ singleUser.username ? singleUser.username : "Unknown" }}
+          {{ !!singleUser.username ? singleUser.username : "Unknown" }}
         </div>
         <div class="d-flex justify-center">
-          {{ singleUser.desc ? singleUser.desc : "Unknown" }}
+          {{ !!singleUser.desc ? singleUser.desc : "Unknown" }}
         </div>
       </div>
     </div>
@@ -40,7 +92,7 @@
             <v-flex class="">
               <div
                 v-if="
-                  this.singleUser.followers
+                  !!this.singleUser.followers
                     ? this.singleUser.followers.includes(this.userId)
                     : ''
                 "
@@ -64,23 +116,28 @@
           </v-layout>
           <v-layout class="mt-5">
             <v-flex>
-              <div class="title">User Information</div>
+              <span class="title mr-16">User Information</span>
+              <span v-if="this.userId === this.currentUserId">
+                <v-btn text fab @click="editUserInfo()"
+                  ><v-icon>mdi-pencil</v-icon></v-btn
+                >
+              </span>
               <div>
                 <span class="mr-4">City :</span
                 ><span class="subtitle-1 grey--text">
-                  {{ singleUser.city ? singleUser.city : "unknown" }}
+                  {{ !!singleUser.city ? singleUser.city : "unknown" }}
                 </span>
               </div>
               <div>
                 <span class="mr-4">From :</span
                 ><span class="subtitle-1 grey--text">{{
-                  singleUser.from ? singleUser.from : "unknown"
+                  !!singleUser.from ? singleUser.from : "unknown"
                 }}</span>
               </div>
               <div>
                 <span class="mr-4">Relationship :</span
                 ><span class="subtitle-1 grey--text">{{
-                  singleUser.relationship ? singleUser.relationship : "unknown"
+                  !!singleUser.relationship ? singleUser.relationship : "unknown"
                 }}</span>
               </div>
             </v-flex>
@@ -91,11 +148,10 @@
               <div class="title">User friends</div>
               <v-row class="p-2" v-if="this.friendsList.length > 0">
                 <v-col
-                cols="4"
+                  cols="4"
                   xs="12"
                   sm="6"
                   md="4"
-
                   class=""
                   v-for="friend in this.friendsList"
                   :key="friend._id"
@@ -106,7 +162,7 @@
                   >
                     <v-img
                       :src="
-                        friend.profilePicture
+                        !!friend.profilePicture
                           ? friend.profilePicture
                           : profileImage
                       "
@@ -117,7 +173,7 @@
                   <div
                     class="mt-2 font-weight-bold d-flex justify-center text-capitalize"
                   >
-                    {{ friend.username ? friend.username : "unkwown" }}
+                    {{ !!friend.username ? friend.username : "unkwown" }}
                   </div>
                 </v-col>
               </v-row>
@@ -131,7 +187,7 @@
         <div class="pa-2">
           <v-layout class="mt-6">
             <div class="title text-capitalize">
-              {{ singleUser ? singleUser.username : "Unknown" }}
+              {{ !!singleUser.username ? singleUser.username : "Unknown" }}
             </div>
           </v-layout>
           <v-layout>
@@ -146,7 +202,7 @@
             <v-flex>
               <v-layout>
                 <div class="subtitle-2">
-                  {{ singleUser ? singleUser.followings.length : 0 }}
+                  {{ !!singleUser.followings ? singleUser.followings.length : 0 }}
                 </div>
                 <div class="subtitle-2 ml-1 grey--text">Followers</div>
               </v-layout>
@@ -154,7 +210,7 @@
             <v-flex>
               <v-layout>
                 <div class="subtitle-2">
-                  {{ singleUser ? singleUser.followers.length : 0 }}
+                  {{ !!singleUser.followers ? singleUser.followers.length : 0 }}
                 </div>
                 <div class="subtitle-2 ml-1 grey--text">Followings</div>
               </v-layout>
@@ -185,6 +241,148 @@
         </div>
       </v-col>
     </v-row>
+
+    <!-- Edit User Information Dialog -->
+    <v-dialog v-model="editUserInfoDialog" max-width="480">
+      <v-card flat>
+        <v-card-text>
+          <v-card-title>
+            Edit Info
+            <v-spacer></v-spacer>
+            <v-btn color="black" icon @click="editUserInfoDialog = false">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-form ref="userInfoRef" lazy-validation>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col class="pa-0">
+                    <v-textarea
+                      v-model="description"
+                      label="Description"
+                      outlined
+                      rows="3"
+                      name="description"
+                      placeholder="Brief Description"
+                    ></v-textarea>
+                  </v-col>
+                  <v-col cols="12" class="pa-0">
+                    <v-text-field
+                      label="City"
+                      name="city"
+                      v-model="city"
+                      type="text"
+                      color="primary1"
+                      outlined
+                      placeholder="City"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" class="pa-0">
+                    <v-text-field
+                      label="From"
+                      name="from"
+                      v-model="from"
+                      type="text"
+                      color="primary1"
+                      outlined
+                      placeholder="From"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" class="pa-0">
+                    <v-text-field
+                      label="Relationship"
+                      name="relationship"
+                      v-model="relationship"
+                      type="text"
+                      color="primary1"
+                      outlined
+                      placeholder="Relationship"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="primary darken-1" outlined @click="updateUserInfo">
+                Save
+              </v-btn>
+            </v-card-actions>
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <!-- Preview profile picture  dialog-->
+    <v-dialog v-model="previewProfileDialog" max-width="750">
+      <v-card>
+        <v-app-bar flat color="white">
+          <v-toolbar-title class="subtitle-1 pl-2">
+            Profile Image
+          </v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn color="black" icon @click="deleteCloudinaryImage">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-app-bar>
+        <v-divider></v-divider>
+        <!-- class that allows us to have a background image (i.e. backgroudUploadImage)-->
+        <div class="backgroudUploadImage">
+          <v-card-text class="py-12 d-flex justify-center" outlined>
+            <v-avatar class="outlined" size="180">
+              <v-avatar size="170">
+                <v-img max-height="390" :src="this.fileUrl"></v-img>
+              </v-avatar>
+            </v-avatar>
+          </v-card-text>
+        </div>
+
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary darken-1" outlined @click="uploadProfileImage">
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Preview cover picture dialog -->
+    <v-dialog v-model="previewCoverImageDialog" max-width="980">
+      <v-card>
+        <v-app-bar flat color="white">
+          <v-toolbar-title class="subtitle-1 pl-2">
+            Cover Image
+          </v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn color="black" icon @click="deleteCloudinaryImage">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-app-bar>
+        <v-divider></v-divider>
+        <div>
+          <v-card-text class="d-flex justify-center" outlined>
+            <v-card height="300">
+              <v-img :src="this.fileUrl" width="880" height="300"></v-img>
+            </v-card>
+          </v-card-text>
+        </div>
+
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary darken-1" outlined @click="uploadCoverImage">
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-overlay :value="uploadOverlay">
+      <v-progress-circular indeterminate size="100"></v-progress-circular>
+    </v-overlay>
   </div>
 </template>
 
@@ -192,6 +390,7 @@
 import LeftSidebar from "../components/LeftSidebar.vue";
 import PostSectionProfile from "../components/PostSectionProfile.vue";
 import Navbar from "../components/Navbar.vue";
+import { CLOUD_NAME, CLOUD_UPLOAD_PRESET } from "../../env";
 import axios from "axios";
 
 export default {
@@ -200,7 +399,7 @@ export default {
   components: { LeftSidebar, PostSectionProfile, Navbar },
   data() {
     return {
-      singleUser: {},
+      singleUser: null,
       userId: localStorage.getItem("userId"),
       username: this.$route.params.username,
       currentUserId: this.$route.params.id,
@@ -210,6 +409,21 @@ export default {
         "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
       friendsList: [],
       allPosts: [],
+      editUserInfoDialog: false,
+      description: "",
+      city: "",
+      from: "",
+      relationship: "",
+
+      isSelecting: false,
+      selectedFile: null,
+
+      fileUrl: "",
+      uploadOverlay: false,
+      previewProfileDialog: false,
+      previewCoverImageDialog: false,
+      editProfilePicBoolean: false,
+      editCoverPicBoolean: false,
     };
   },
   methods: {
@@ -259,6 +473,7 @@ export default {
           console.log(err);
         });
     },
+
     unFollowUser() {
       axios
         .put(`http://localhost:4000/api/users/${this.currentUserId}/unfollow`, {
@@ -287,7 +502,179 @@ export default {
         })
         .catch((err) => console.log(err));
     },
+
+    editUserInfo() {
+      this.editUserInfoDialog = true;
+      this.description = this.singleUser.desc;
+      this.city = this.singleUser.city;
+      this.from = this.singleUser.from;
+      this.relationship = this.singleUser.relationship;
+    },
+
+    updateUserInfo() {
+      axios
+        .put(`http://localhost:4000/api/users/${this.userId}`, {
+          userId: this.userId,
+          desc: this.description,
+          city: this.city,
+          from: this.from,
+          relationship: this.relationship,
+        })
+        .then((res) => {
+          this.editUserInfoDialog = false;
+          location.reload();
+          console.log(res.data);
+        })
+        .catch((err) => console.log(err));
+    },
+
+    handleFileImportProfile() {
+      this.isSelecting = true;
+      // After obtaining the focus when closing the FilePicker, return the button state to normal
+      window.addEventListener(
+        "focus",
+        () => {
+          this.isSelecting = false;
+        },
+        { once: true }
+      );
+      // Trigger click on the FileInput
+      this.$refs.uploaderProfile.click();
+    },
+
+    handleFileImportCover() {
+      this.isSelecting = true;
+      // After obtaining the focus when closing the FilePicker, return the button state to normal
+      window.addEventListener(
+        "focus",
+        () => {
+          this.isSelecting = false;
+        },
+        { once: true }
+      );
+      // Trigger click on the FileInput
+      this.$refs.uploaderCover.click();
+    },
+
+    // image uploader button FUNCTION 2
+    onFileChanged(e) {
+      this.selectedFile = e.target.files[0];
+      this.uploadOverlay = true;
+      this.uploadFileToCloudinary(this.selectedFile).then((data) => {
+        this.fileUrl = data.url;
+        this.uploadOverlay = false;
+
+        // Deciding which dialog will show, whether coverPicture or profilePicture dialog
+        if (this.editProfilePicBoolean) {
+          this.previewProfileDialog = true;
+        } else if (this.editCoverPicBoolean) {
+          this.previewCoverImageDialog = true;
+        }
+      });
+    },
+
+    // Upload functionality method
+    uploadFileToCloudinary(file) {
+      return new Promise(function (resolve, reject) {
+        //Ideally these to lines would be in a .env file
+        const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`;
+        const CLOUDINARY_UPLOAD_PRESET = CLOUD_UPLOAD_PRESET;
+
+        let formData = new FormData();
+        formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+        formData.append("folder", "social-media");
+        formData.append("file", file);
+
+        let request = new XMLHttpRequest();
+        request.open("POST", CLOUDINARY_URL, true);
+        request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+
+        request.onreadystatechange = () => {
+          // File uploaded successfully
+          if (request.readyState === 4 && request.status === 200) {
+            let response = JSON.parse(request.responseText);
+            resolve(response);
+          }
+
+          // Not succesfull, let find our what happened
+          if (request.status !== 200) {
+            let response = JSON.parse(request.responseText);
+            let error = response.error.message;
+            alert("error, status code not 200 " + error);
+            reject(error);
+          }
+        };
+
+        request.onerror = (err) => {
+          alert("error: " + err);
+          reject(err);
+        };
+
+        request.send(formData);
+      });
+    },
+
+    editProfilePicture() {
+      this.editProfilePicBoolean = true;
+      this.handleFileImportProfile();
+    },
+
+    editCoverPicture() {
+      this.editCoverPicBoolean = true;
+      this.handleFileImportCover();
+    },
+
+    uploadProfileImage() {
+      axios
+        .put(`http://localhost:4000/api/users/${this.userId}`, {
+          userId: this.userId,
+          profilePicture: this.fileUrl,
+        })
+        .then((res) => {
+          this.previewProfileDialog = false;
+          // resetting dialog decider
+          this.editProfilePicBoolean = false;
+          location.reload();
+          console.log(res.data);
+        })
+        .catch((err) => console.log(err));
+    },
+
+    uploadCoverImage() {
+      axios
+        .put(`http://localhost:4000/api/users/${this.userId}`, {
+          userId: this.userId,
+          coverPicture: this.fileUrl,
+        })
+        .then((res) => {
+          this.previewCoverImageDialog = false;
+          // resetting dialog decider
+          this.editCoverPicBoolean = false;
+          location.reload();
+          console.log(res.data);
+        })
+        .catch((err) => console.log(err));
+    },
+
+    deleteCloudinaryImage() {
+      this.editCoverPicBoolean = false;
+      this.editProfilePicBoolean = false;
+      // Retrieving public_id from url of cloudinary image
+      let cloudId = this.fileUrl.split("/").slice(-1)[0].split(".")[0];
+      axios
+        .delete(
+          `http://localhost:4000/api/posts/${this.userId}/${cloudId}/remove`
+        )
+        .then((res) => {
+          this.previewProfileDialog = false;
+          this.previewCoverImageDialog = false;
+          location.reload();
+          console.log(res.data);
+        })
+        .catch((err) => console.log(err));
+    },
   },
+
   mounted() {
     this.getSingleUser();
     this.getFriends();
@@ -296,4 +683,24 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.main-img {
+  position: relative;
+  top: 0;
+  left: 0;
+}
+.sub-icon {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+}
+
+.backgroudUploadImage {
+  background: url("../assets/greyColor.jpeg") no-repeat center center fixed !important;
+  background-size: cover;
+}
+
+.cursor-pointer:hover {
+  cursor: pointer;
+}
+</style>

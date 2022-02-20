@@ -79,6 +79,7 @@
 
 <script>
 import axios from "axios";
+import { setAuthToken, setUserId } from "../services/auth";
 
 export default {
   name: "Login",
@@ -148,6 +149,12 @@ export default {
         })
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
+            setAuthToken(res.data.accessToken);
+            setUserId(res.data._id);
+            this.$store.dispatch("setCurrentUserInState", res.data);
+            this.$store.dispatch("setIsLoggedIn", res.data);
+            this.$store.dispatch("setUserId", res.data);
+            // this.$store.commit("SET_USER_ROLE_IN_STATE", res.data);
             localStorage.setItem("token", res.data.accessToken);
             localStorage.setItem("email", res.data.email);
             localStorage.setItem("username", res.data.username);

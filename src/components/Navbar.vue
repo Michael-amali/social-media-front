@@ -19,7 +19,7 @@
       </v-row>
 
       <v-spacer></v-spacer>
-      <v-btn
+      <!-- <v-btn
         dark
         depressed
         color="#E7596F"
@@ -28,24 +28,32 @@
       >
         <span class="mr-2">Login </span>
       </v-btn>
-      <v-btn dark depressed color="#E7596F" class="text-none mr-5 hidden-sm-and-down">
+      <v-btn
+        dark
+        depressed
+        color="#E7596F"
+        class="text-none mr-5 hidden-sm-and-down"
+      >
         <span class="mr-2"> Sign Up </span>
-      </v-btn>
-      <v-btn icon class="mr-2 hidden-sm-and-down">
+      </v-btn> -->
+      <v-btn icon class="mr-2 hidden-sm-and-down" @click="goToMessenger()">
         <v-icon>mdi-email-outline</v-icon>
       </v-btn>
       <v-btn icon class="mr-5 hidden-sm-and-down">
         <v-icon>mdi-heart-outline</v-icon>
       </v-btn>
 
-      <v-menu left bottom offset-y>
+      <v-menu left bottom offset-y class="min-button">
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on">
-            <v-avatar size="30">
+            <v-avatar size="40">
               <img
-                lazy-src="https://images.unsplash.com/photo-1549068106-b024baf5062d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80"
-                src="https://images.unsplash.com/photo-1549068106-b024baf5062d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80"
-                alt="John"
+                :src="
+                  currentUserInStore.profilePicture
+                    ? currentUserInStore.profilePicture
+                    : profileImage
+                "
+                alt=""
               />
             </v-avatar>
             <v-icon>mdi-menu-down</v-icon>
@@ -68,6 +76,8 @@
 
 <script>
 import axios from "axios";
+import { logoutUser } from "../services/auth";
+
 export default {
   name: "Navbar",
 
@@ -79,6 +89,8 @@ export default {
       username: localStorage.getItem("username"),
       userId: localStorage.getItem("userId"),
       singleUser: {},
+      profileImage:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
     };
   },
   methods: {
@@ -101,6 +113,7 @@ export default {
       }
     },
     logOut() {
+      logoutUser();
       localStorage.clear();
       this.$router.push("/login");
     },
@@ -117,10 +130,20 @@ export default {
         })
         .catch((err) => console.log(err));
     },
+
+    goToMessenger() {
+      this.$router.push("/messenger");
+      location.reload();
+    },
   },
 
   mounted() {
     this.getSingleUser();
+  },
+  computed: {
+    currentUserInStore() {
+      return this.$store.state.currentUser;
+    },
   },
 };
 </script>
@@ -128,5 +151,9 @@ export default {
 <style scoped>
 .cursor-pointer:hover {
   cursor: pointer;
+}
+
+.min-button::before {
+  display: none;
 }
 </style>

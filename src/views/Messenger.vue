@@ -3,8 +3,8 @@
     <Navbar />
     <v-container fluid>
       <v-row>
-        <!-- friends section -->
-        <v-col>
+        <!-- FRIENDS SECTION -->
+        <v-col md="3" sm="4" cols="12">
           <v-row>
             <!-- search field -->
             <v-col cols="12">
@@ -17,77 +17,94 @@
 
             <!-- friends list-->
             <v-col class="pa-3">
-              <div>
-                <div class="py-3">
-                  <span class="mr-4">
+              <v-col
+                class="pa-0"
+                v-for="(chatPartner, idx) in this.userChatPartners"
+                :key="idx"
+              >
+                <v-card
+                  @click="getConversation(chatPartner._id)"
+                  class="ma-2 pa-1"
+                  outlined
+                >
+                  <div class="py-3">
+                    <span class="mr-4">
                       <v-avatar size="50">
                         <v-img
-                          src="https://cdn.vuetifyjs.com/images/lists/3.jpg"
-                        ></v-img>
-                      </v-avatar></span>
-                  <span class="subtitle-1">Pamela Kim </span>
-                </div>
-                <div>
-                  <span class="mr-4">
-
-                      <v-avatar size="50">
-                        <v-img
-                          src="https://cdn.vuetifyjs.com/images/lists/5.jpg"
-                        ></v-img>
-                      </v-avatar> </span
-                  ><span class="subtitle-1">Rema Newton</span>
-                </div>
-                <div class="py-5">
-                  <span class="mr-4">
-
-                      <v-avatar size="50">
-                        <v-img
-                          src="https://cdn.vuetifyjs.com/images/lists/2.jpg"
-                        ></v-img>
-                      </v-avatar> </span
-                  ><span class="subtitle-1">Victony </span>
-                </div>
-              </div>
+                          :src="
+                            chatPartner.profilePicture
+                              ? chatPartner.profilePicture
+                              : profileImage
+                          "
+                        ></v-img> </v-avatar
+                    ></span>
+                    <span class="subtitle-1">{{ chatPartner.username }} </span>
+                  </div>
+                </v-card>
+              </v-col>
             </v-col>
           </v-row>
         </v-col>
 
-        <!-- chat messages -->
-        <v-col>
+        <!-- CHAT MESSAGES -->
+        <v-col md="6" sm="8" cols="12">
           <v-row>
             <v-col>
-              <div class="chatBox">
-                <div class="chatBoxWrapper">
-                  <div class="chatBoxTop">
-                    <Message :own="false" />
-                    <Message :own="own" />
-                    <Message :own="false" />
-                    <Message :own="false" />
-                    <Message :own="own" />
-                    <Message :own="false" />
-                  </div>
-                  <div class="chatBoxBottom">
-                    <textarea
-                      class="chatMessageInput"
-                      name=""
-                      id=""
-                      outlined
-                      placeholder="Write something.."
-                    ></textarea>
-                    <button class="chatSubmitButton">Send</button>
+              <v-col v-if="!this.currentConversationBoolean">
+                <div class="display-2 pa-8">
+                  Open a conversation to start a chat
+                </div>
+              </v-col>
+              <v-card outlined v-else>
+                <div class="chatBox" id="chatBoxId">
+                  <div class="chatBoxWrapper">
+                    <div class="chatBoxTop" id="chatBoxTopId">
+                      <v-col
+                        v-for="(messageArray, idx) in this.messages"
+                        :key="idx"
+                      >
+                        <v-col
+                          v-for="(message, idc) in messageArray"
+                          :key="idc"
+                        >
+                          <Message
+                            :own="message.sender === userId ? true : false"
+                            :message="message"
+                          />
+                        </v-col>
+                      </v-col>
+                    </div>
+                    <div class="chatBoxBottom">
+                      <textarea
+                        class="chatMessageInput"
+                        name=""
+                        v-model="userInputText"
+                        outlined
+                        placeholder="Write something.."
+                      ></textarea>
+                      <button class="chatSubmitButton" @click="handleSubmit">
+                        Send
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </v-card>
             </v-col>
           </v-row>
         </v-col>
-        <!-- Online friends -->
-        <v-col> Online Friends 
-            <v-row>
-              <v-col class="pa-3">
-              <div>
-                <div class="py-5">
-                  <span class="mr-4">
+
+        <!-- ONLINE FRIENDS -->
+        <v-col md="3" sm="12" cols="12">
+          <div class="title">Online Friends</div>
+          <v-col class="pa-0 mt-7" v-if="this.onlineFriends.length > 0">
+            <v-row
+              class=""
+              v-for="(onlineFriend, idx) in this.onlineFriends"
+              :key="idx"
+            >
+              <v-col>
+                <div cols="12" class="">
+                  <span class="mr-4" @click="handleOnelineClick(onlineFriend)">
                     <v-badge
                       bordered
                       right
@@ -97,47 +114,23 @@
                     >
                       <v-avatar size="50">
                         <v-img
-                          src="https://cdn.vuetifyjs.com/images/lists/3.jpg"
+                          :src="
+                            onlineFriend.profilePicture
+                              ? onlineFriend.profilePicture
+                              : profilePic
+                          "
+                          alt="John"
                         ></v-img>
                       </v-avatar> </v-badge
                   ></span>
-                  <span class="subtitle-1">Pamela Kim </span>
+                  <span class="subtitle-1">{{ onlineFriend.username }}</span>
                 </div>
-                <div>
-                  <span class="mr-4">
-                    <v-badge
-                      bordered
-                      right
-                      color="green"
-                      offset-x="15"
-                      offset-y="15"
-                    >
-                      <v-avatar size="50">
-                        <v-img
-                          src="https://cdn.vuetifyjs.com/images/lists/5.jpg"
-                        ></v-img>
-                      </v-avatar> </v-badge></span
-                  ><span class="subtitle-1">Rema Newton</span>
-                </div>
-                <div class="py-5">
-                  <span class="mr-4">
-                    <v-badge
-                      bordered
-                      right
-                      color="green"
-                      offset-x="15"
-                      offset-y="15"
-                    >
-                      <v-avatar size="50">
-                        <v-img
-                          src="https://cdn.vuetifyjs.com/images/lists/2.jpg"
-                        ></v-img>
-                      </v-avatar> </v-badge></span
-                  ><span class="subtitle-1">Victony </span>
-                </div>
-              </div>
-            </v-col>
+              </v-col>
             </v-row>
+          </v-col>
+          <v-col v-else>
+            <div>No friends online</div>
+          </v-col>
         </v-col>
       </v-row>
     </v-container>
@@ -147,7 +140,8 @@
 <script>
 import Navbar from "../components/Navbar.vue";
 import Message from "../components/Message.vue";
-import axios from "axios"
+import axios from "axios";
+import { io } from "socket.io-client";
 
 export default {
   name: "Messenger",
@@ -159,35 +153,217 @@ export default {
       own: true,
       userId: localStorage.getItem("userId"),
       conversations: [],
-      friendId: "",
+      userChatPartners: [],
+      profileImage:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
+      currentConversationBoolean: false,
+      currentConversation: null,
+      messages: [],
+      userInputText: "",
+      currentConversationId: "",
+      socket: null,
+      arrivalMessage: null,
+      onlineUsers: [],
+      friendsList: [],
+      onlineFriends: [],
+      profilePic:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
+      receiverId: "",
     };
   },
+
   methods: {
-    getConversations(){
-      axios.get(`http://localhost:4000/api/conversations/${this.userId}`).then((res)=>{
-        this.conversations = [...res.data];
-        console.log(this.conversations)
-        // this.getUser();
-      }).catch((err) => console.log(err));
+    getConversations() {
+      axios
+        .get(`http://localhost:4000/api/conversations/${this.userId}`)
+        .then((res) => {
+          this.conversations = [...res.data];
+          console.log(this.conversations, "---------convo");
+
+          this.getUserChatFriends();
+        })
+        .catch((err) => console.log(err));
     },
-    // getFriend(){
-      
-    // },
 
-    getUser(){
-      this.friendId = this.conversations.members.find((person)=> person !== this.userId);
+    getUserChatFriends() {
+      let userchatPartnersArray = [];
+      this.conversations.forEach((conversation) => {
+        // members array will contain user and chat partner. So will get all the chat partners and put then in an array
+        let userChatPartnerId = conversation.members.find(
+          (member) => member !== this.userId
+        );
+        userchatPartnersArray.push(userChatPartnerId);
+      });
 
-      axios.get(`http://localhost:4000/api/users/find?userId=${this.friendId}`).then((res)=>{
-        console.log(res.data)
-      }).catch((err) => console.log(err));
+      // Using id to get userChatPartners details
+      userchatPartnersArray.forEach((partner_id) => {
+        axios
+          .get(`http://localhost:4000/api/users/find?userId=${partner_id}`)
+          .then((res) => {
+            this.userChatPartners.push(res.data);
+          })
+          .catch((err) => console.log(err));
+      });
+    },
 
+    // Get conversation between LoggedIn user and chatPartner
+    getConversation(partner_id) {
+      this.currentConversationBoolean = true;
+
+      // then identify the member who is chatting with the current user
+      this.receiverId = partner_id;
+
+      let userConversations = [];
+      axios
+        .get(`http://localhost:4000/api/conversations/${partner_id}`)
+        .then((res) => {
+          userConversations = [...res.data];
+          console.log(res.data, "conversations");
+
+          // the message is set to empty to prevent concatenating of messages from different conversations
+          this.messages = [];
+          userConversations.forEach((conversation) => {
+            this.getMessages(conversation._id);
+          });
+        })
+        .catch((err) => console.log(err));
+    },
+
+    getMessages(conversationId) {
+      this.currentConversationId = conversationId;
+
+      // Find the current conversation
+      this.currentConversation = this.conversations.find(
+        (conversation) => conversation._id === this.currentConversationId
+      );
+      console.log(this.currentConversation, "current-conversations");
+
+      axios
+        .get(`http://localhost:4000/api/messages/${conversationId}`)
+        .then((res) => {
+          this.messages.push(res.data);
+          this.scrollToLastMessage();
+        })
+        .catch((err) => console.log(err));
+    },
+
+    handleSubmit() {
+      const messageData = {
+        sender: this.userId,
+        text: this.userInputText,
+        conversationId: this.currentConversationId,
+      };
+
+      this.socket.emit("sendMessage", {
+        senderId: this.userId,
+        receiverId: this.receiverId,
+        text: this.userInputText,
+      });
+
+      axios
+        .post(`http://localhost:4000/api/messages/`, messageData)
+        .then((res) => {
+          // updating the messages array
+          this.messages = [...this.messages, res.data];
+
+          // Sort of only reloading the chat section after user types (NOT EFFICIENT)
+          this.messages = [];
+          this.getMessages(this.currentConversationId);
+          this.userInputText = "";
+        })
+        .catch((err) => console.log(err));
+    },
+
+    scrollToLastMessage() {
+      const chatBoxTop = document.getElementById("chatBoxId");
+      console.log(chatBoxTop.scrollTop, "top");
+      console.log(chatBoxTop.scrollHeight, "height");
+      chatBoxTop.scrollTop += chatBoxTop.scrollHeight;
+      chatBoxTop.scrollIntoView(true);
+      console.log(chatBoxTop.scrollTop, "height after");
+    },
+
+    setSocket() {
+      this.socket = io("ws://localhost:8900");
+    },
+
+    getMessagesFromSocket() {
+      this.socket.on("getMessage", (data) => {
+        this.arrivalMessage = {
+          sender: data.senderId,
+          text: data.text,
+          createdAt: Date.now(),
+        };
+      });
+      console.log(this.arrivalMessage, "arrivalMessage");
+    },
+
+    sendMessageToServer() {
+      this.socket.emit("addUser", this.userId);
+      this.socket.on("getUsers", (users) => {
+        this.onlineUsers = [...users];
+        console.log(users, "users-----");
+      });
+    },
+
+    addingArrivalMessage() {
+      if (
+        this.arrivalMessage &&
+        this.currentConversation?.members.includes(this.arrivalMessage.sender)
+      ) {
+        this.messages = [...this.messages, this.arrivalMessage];
+      }
+    },
+
+    getFriends() {
+      axios
+        .get(`http://localhost:4000/api/users/friends/${this.userId}`)
+        .then((res) => {
+          if (res.status >= 200 && res.status < 400) {
+            this.friendsList = [...res.data];
+
+            this.setOnlineFriends();
+          }
+        })
+        .catch((err) => console.log(err));
+    },
+
+    setOnlineFriends() {
+      let onlineUsersId = [];
+
+      this.onlineUsers.forEach((onlineUser) => {
+        onlineUsersId.push(onlineUser.userId);
+      });
+      this.onlineFriends = this.friendsList.filter((friend) => {
+        return onlineUsersId.includes(friend._id);
+      });
+    },
+
+    handleOnelineClick(person) {
+      axios
+        .get(
+          `http://localhost:4000/api/conversations/find/${this.userId}/${person._id}`
+        )
+        .then((res) => {
+          let conversation = res.data;
+
+          this.currentConversationBoolean = true;
+          this.messages = [];
+          this.getMessages(conversation._id);
+        })
+        .catch((err) => console.log(err));
+    },
   },
 
-    mounted(){
-      this.getConversations();
-      // this.getUser()
-    }
-  }
+  mounted() {
+    this.getConversations();
+    this.setSocket();
+    this.getMessagesFromSocket();
+    this.sendMessageToServer();
+    this.getFriends();
+    // this.setOnlineFriends();
+    console.log(this.receiverId, "friendssssRECEIVER");
+  },
 };
 </script>
 
@@ -211,7 +387,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
+  padding: 3px;
 }
 
 .chatMessageInput {

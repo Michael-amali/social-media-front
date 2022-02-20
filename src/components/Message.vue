@@ -2,32 +2,38 @@
   <div>
     <div :class="this.own ? 'message own' : 'message'">
       <div class="messageTop">
-        <img
-          class="messageImg"
-          src="https://cdn.vuetifyjs.com/images/lists/3.jpg"
-          alt=""
-        />
+        <img class="messageImg" :src="profileImage" alt="" />
         <p class="messageText">
-          Hello this is a message Lorem, ipsum dolor siticabcusamus eveniet!
-          Culpa.
+          {{ message.text }}
         </p>
       </div>
-      <div class="messageBottom">1 hour ago</div>
+      <div class="messageBottom">{{ this.formattedTime }}</div>
     </div>
   </div>
 </template>
 
 <script>
+import { format } from "timeago.js";
 export default {
   name: "Message",
-  props: ["own"],
+  props: ["own", "message"],
 
   components: {},
   data() {
-    return {};
+    return {
+      formattedTime: "",
+      profileImage:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
+    };
   },
-  methods: {},
-  mounted() {},
+  methods: {
+    formatTime() {
+      this.formattedTime = format(this.message.createdAt);
+    },
+  },
+  mounted() {
+    this.formatTime();
+  },
 };
 </script>
 

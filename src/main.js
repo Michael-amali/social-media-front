@@ -4,9 +4,11 @@ import router from "./router";
 import store from "./store";
 import vuetify from "./plugins/vuetify";
 import axios from "axios";
+import { getAuthToken } from "./services/auth";
 
 axios.defaults.headers = {
-  Authorization: `Bearer ${localStorage.getItem("token")}`,
+  // Authorization: `Bearer ${localStorage.getItem("token")}`,
+  Authorization: `Bearer ${getAuthToken()}`,
 };
 
 Vue.config.productionTip = false;
