@@ -1,7 +1,8 @@
 <template>
   <v-app>
     <v-main>
-      <router-view />
+      <!-- v-bind key ensure there's reload of page-->
+      <router-view :key="$route.path" />
     </v-main>
   </v-app>
 </template>
