@@ -1,7 +1,6 @@
 <template>
   <div>
     <Navbar />
-    <LeftSidebar />
     <v-row>
       <v-col xs="12" sm="8" md="7">
         <PostSection />
@@ -14,7 +13,6 @@
 </template>
 
 <script>
-import LeftSidebar from "../components/LeftSidebar.vue";
 import RightSidebar from "../components/RightSidebar.vue";
 import PostSection from "../components/PostSection.vue";
 import Navbar from "../components/Navbar.vue";
@@ -22,7 +20,7 @@ import Navbar from "../components/Navbar.vue";
 export default {
   name: "Home",
 
-  components: { LeftSidebar, RightSidebar, PostSection, Navbar },
+  components: { RightSidebar, PostSection, Navbar },
   data() {
     return {};
   },

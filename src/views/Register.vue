@@ -4,7 +4,7 @@
       <v-col>
         <v-card flat outlined>
           <v-row>
-            <v-col><v-img :src="registerImage" height="600"></v-img></v-col>
+            <v-col class="hidden-sm-and-down"><v-img :src="registerImage" height="600"></v-img></v-col>
             <v-col class="" align-self="center">
               <v-card-text>
                 <v-form
