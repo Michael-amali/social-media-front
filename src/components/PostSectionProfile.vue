@@ -150,7 +150,32 @@
           </v-app-bar>
           <v-card-text class="py-0">{{ post.desc }}</v-card-text>
           <v-card-text class="pb-0">
-            <v-img max-height="400" :src="post.img"></v-img>
+            <!-- image loader effect -->
+            <!-- If the user didn't include a picture in the post, the loader shouldn't be there -->
+            <div v-if="post.img">
+              <v-img
+                :src="post.img ? post.img : ''"
+                :lazy-src="post.img ? post.img : ''"
+                aspect-ratio="1.3"
+                class="grey lighten-2"
+              >
+                <template v-slot:placeholder>
+                  <v-row
+                    class="fill-height ma-0"
+                    align="center"
+                    justify="center"
+                  >
+                    <v-progress-circular
+                      indeterminate
+                      color="grey lighten-5"
+                    ></v-progress-circular>
+                  </v-row>
+                </template>
+              </v-img>
+            </div>
+            <div v-else>
+              <v-img max-height="400" :src="post.img"></v-img>
+            </div>
           </v-card-text>
           <v-card-actions>
             <div class="text-center">
@@ -168,8 +193,8 @@
                 <v-icon dark> mdi-heart </v-icon>
               </v-btn>
               <span class="">{{ post.likes.length }} people like it</span>
-              <span class="ml-16"></span><span class="ml-16"></span>
-              <span class="ml-16">Comments</span>
+              <span class=""></span><span class=""></span>
+              <span class="ml-16 hidden-sm-and-down">Comments</span>
             </div>
           </v-card-actions>
         </v-card>
@@ -245,7 +270,7 @@ export default {
     },
 
     continueToPost(post) {
-      this.allPosts.push(post);
+      this.allPosts.unshift(post);
       this.previewDialog = false;
       this.filename = null;
       this.descriptionPost = "";
@@ -340,16 +365,21 @@ export default {
     },
 
     deleteSinglePost(postId) {
-      this.allPosts.forEach((post, idx, posts) => {
-        if (postId === post._id) {
-          posts.splice(idx, 1);
-        }
-      });
-
+      let updateAllPosts = [...this.allPosts];
+      // Deleting from backend
       axios
         .delete(`http://localhost:4000/api/posts/${postId}/${this.userId}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
+
+            // Deleting from frontend
+            updateAllPosts.forEach((post, idx, posts) => {
+              if (postId === post._id) {
+                posts.splice(idx, 1);
+              }
+            });
+            // update allPosts after deleting from frontend
+            this.allPosts = updateAllPosts;
             console.log("Post successfully deleted");
           }
         })
