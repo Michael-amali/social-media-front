@@ -1,10 +1,13 @@
 <template>
   <div>
+    <NavbarNew />
     <div>
       <div style="position: relative; left: 0; top: 0">
         <v-img
           class="main-img"
-          :src="!!singleUser.coverPicture ? singleUser.coverPicture : coverImage"
+          :src="
+            !!singleUser.coverPicture ? singleUser.coverPicture : coverImage
+          "
           height="240"
         ></v-img>
         <div class="sub-icon">
@@ -40,13 +43,21 @@
             offset-x="25"
             offset-y="55"
           >
-            <v-avatar class="outlined cursor-pointer" size="180">
-              <v-avatar size="170">
+            <v-avatar
+              class="cursor-pointer"
+              color="blue-grey darken-2"
+              size="178"
+            >
+              <v-avatar outlined size="170">
                 <v-img
                   @click="editProfilePicture"
                   :loading="isSelecting"
                   class="cursor-pointer"
-                  :src="!!singleUser.profilePicture ? singleUser.profilePicture : profileImage"
+                  :src="
+                    !!singleUser.profilePicture
+                      ? singleUser.profilePicture
+                      : profileImage
+                  "
                 />
               </v-avatar>
             </v-avatar>
@@ -63,10 +74,14 @@
 
         <!-- Not editable profile picture -->
         <div class="d-flex justify-center mt-n16" v-else>
-          <v-avatar class="outlined" size="180">
+          <v-avatar class="outlined cursor-pointer" color="blue-grey darken-2" size="180">
             <v-avatar size="170">
               <v-img
-                :src="!!singleUser.profilePicture ? singleUser.profilePicture : profileImage"
+                :src="
+                  !!singleUser.profilePicture
+                    ? singleUser.profilePicture
+                    : profileImage
+                "
               />
             </v-avatar>
           </v-avatar>
@@ -80,8 +95,7 @@
         </div>
       </div>
     </div>
-    <Navbar />
-    <LeftSidebar />
+
     <v-row>
       <v-col xs="12" sm="8" md="7">
         <PostSectionProfile />
@@ -113,6 +127,16 @@
                 >
               </div>
             </v-flex>
+            <v-flex>
+              <div>
+                <v-btn
+                  color="deep-purple lighten-2"
+                  class="pa-3 white--text text-capitalize"
+                  @click="startConversation()"
+                  >message<v-icon right>mdi-email</v-icon></v-btn
+                >
+              </div>
+            </v-flex>
           </v-layout>
           <v-layout class="mt-5">
             <v-flex>
@@ -137,7 +161,9 @@
               <div>
                 <span class="mr-4">Relationship :</span
                 ><span class="subtitle-1 grey--text">{{
-                  !!singleUser.relationship ? singleUser.relationship : "unknown"
+                  !!singleUser.relationship
+                    ? singleUser.relationship
+                    : "unknown"
                 }}</span>
               </div>
             </v-flex>
@@ -202,7 +228,9 @@
             <v-flex>
               <v-layout>
                 <div class="subtitle-2">
-                  {{ !!singleUser.followings ? singleUser.followings.length : 0 }}
+                  {{
+                    !!singleUser.followings ? singleUser.followings.length : 0
+                  }}
                 </div>
                 <div class="subtitle-2 ml-1 grey--text">Followers</div>
               </v-layout>
@@ -387,16 +415,15 @@
 </template>
 
 <script>
-import LeftSidebar from "../components/LeftSidebar.vue";
 import PostSectionProfile from "../components/PostSectionProfile.vue";
-import Navbar from "../components/Navbar.vue";
+import NavbarNew from "../components/Navbar.vue";
 import { CLOUD_NAME, CLOUD_UPLOAD_PRESET } from "../../env";
 import axios from "axios";
 
 export default {
   name: "ProfilePage",
 
-  components: { LeftSidebar, PostSectionProfile, Navbar },
+  components: { PostSectionProfile, NavbarNew },
   data() {
     return {
       singleUser: null,
@@ -408,6 +435,12 @@ export default {
       profileImage:
         "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
       friendsList: [],
+      currentConversationBoolean: false,
+      receiverId: "",
+      messages: [],
+      currentConversationId: "",
+      conversations: [],
+      currentConversation: [],
       allPosts: [],
       editUserInfoDialog: false,
       description: "",
@@ -672,6 +705,82 @@ export default {
           console.log(res.data);
         })
         .catch((err) => console.log(err));
+    },
+
+    // Get conversation between LoggedIn user and chatPartner
+    getConversation(partner_id) {
+      this.currentConversationBoolean = true;
+
+      // then identify the member who is chatting with the current user
+      this.receiverId = partner_id;
+
+      let userConversations = [];
+      axios
+        .get(`http://localhost:4000/api/conversations/${partner_id}`)
+        .then((res) => {
+          userConversations = [...res.data];
+          console.log(res.data, "conversations");
+
+          // the message is set to empty to prevent concatenating of messages from different conversations
+          this.messages = [];
+          userConversations.forEach((conversation) => {
+            this.getMessages(conversation._id);
+          });
+        })
+        .catch((err) => console.log(err));
+    },
+
+    getMessages(conversationId) {
+      this.currentConversationId = conversationId;
+
+      // Find the current conversation
+      this.currentConversation = this.conversations.find(
+        (conversation) => conversation._id === this.currentConversationId
+      );
+      console.log(this.currentConversation, "current-conversations");
+
+      axios
+        .get(`http://localhost:4000/api/messages/${conversationId}`)
+        .then((res) => {
+          this.messages.push(res.data);
+        })
+        .catch((err) => console.log(err));
+    },
+
+    createConversation() {
+      axios
+        .post(`http://localhost:4000/api/conversations/`, {
+          senderId: this.userId,
+          receiverId: this.currentUserId,
+        })
+        .then((res) => {
+          this.currentConversation = res.data;
+          // Getting conversation and getMessages function retyped
+          this.currentConversationBoolean = true;
+
+          // then identify the member who is chatting with the current user
+          this.receiverId = this.currentUserId;
+          let userConversations = [];
+          axios
+            .get(`http://localhost:4000/api/conversations/${this.receiverId}`)
+            .then((response) => {
+              userConversations = [...response.data];
+
+              // the message is set to empty to prevent concatenating of messages from different conversations
+              this.messages = [];
+              userConversations.forEach((conversation) => {
+                this.getMessages(conversation._id);
+
+                this.$router.push("/messenger");
+              });
+            })
+            .catch((err) => console.log(err));
+        })
+        .catch((err) => console.log(err));
+    },
+
+    startConversation() {
+      this.createConversation();
     },
   },
 
