@@ -172,7 +172,7 @@
                   </v-btn>
                   <span class="">{{ post.likes.length }} people like it</span>
                   <span class="ml-16"></span><span class="ml-16"></span>
-                  <span class="ml-16">Comments</span>
+                  <span class="ml-16 hidden-sm-and-down">Comments</span>
                 </div>
               </v-card-actions>
             </v-card>
@@ -238,7 +238,7 @@
                 </v-btn>
                 <span class="">{{ post.likes.length }} people like it</span>
                 <span class="ml-16"></span><span class="ml-16"></span>
-                <span class="ml-16">Comments</span>
+                <span class="ml-16 hidden-sm-and-down">Comments</span>
               </div>
             </v-card-actions>
           </v-card>
@@ -400,16 +400,19 @@ export default {
     },
 
     deleteSinglePost(postId) {
-      this.allPosts.forEach((post, idx, posts) => {
-        if (postId === post._id) {
-          posts.splice(idx, 1);
-        }
-      });
+      let updateAllPosts = [...this.allPosts];
 
       axios
         .delete(`http://localhost:4000/api/posts/${postId}/${this.userId}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
+            // Deleting from frontend
+            updateAllPosts.forEach((post, idx, posts) => {
+              if (postId === post._id) {
+                posts.splice(idx, 1);
+              }
+            });
+            this.allPosts = updateAllPosts;
             console.log("Post successfully deleted");
           }
         })
@@ -436,11 +439,29 @@ export default {
         .catch((err) => console.log(err));
     },
 
+    // like in the backend
     likePost(post) {
       axios
         .put(`http://localhost:4000/api/posts/${post._id}/like/${this.userId}`)
         .then((res) => {
-          console.log(res);
+          if (res.status >= 200 && res.status < 400) {
+
+            // update like in the frontend. So we find the specific post, if there's like we remoe and reduce else we add
+            this.allPosts.forEach((singlePost) => {
+              if (singlePost._id === post._id) {
+                if (singlePost.likes.includes(this.userId)) {
+                  singlePost.likes.length--;
+                  singlePost.likes = singlePost.likes.filter(
+                    (like) => like.userId !== this.userId
+                  );
+                } else {
+                  singlePost.likes.push(this.userId);
+                }
+              }
+            });
+
+            console.log(res.data);
+          }
         })
         .catch((err) => console.log(err));
     },
