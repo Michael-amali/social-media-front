@@ -8,40 +8,81 @@
           <v-row>
             <!-- search field -->
             <v-col cols="12">
-              <v-text-field
-                label="Search users"
-                prepend-icon="mdi-microscope"
-                v-model="searchTerm"
-              ></v-text-field>
+              <v-autocomplete
+                v-model="model"
+                :items="itemsItems"
+                :loading="isLoading"
+                :search-input.sync="search"
+                color="blue-grey darken-2"
+                hide-no-data
+                hide-selected
+                item-text="Username"
+                item-value="API"
+                label="Search by username"
+                placeholder="Start typing to Search"
+                return-object
+                ref="users"
+                single-line
+                hide-details
+                rounded
+                outlined
+                dense
+                prepend-inner-icon="mdi-magnify"
+              ></v-autocomplete>
             </v-col>
 
+            <v-col cols="12" class="py-0">
+              <div class="title pl-2">Chat List</div>
+            </v-col>
             <!-- friends list-->
             <v-col class="pa-3">
-              <v-col
-                class="pa-0"
+              <v-hover
+                v-slot="{ hover }"
                 v-for="(chatPartner, idx) in this.userChatPartners"
                 :key="idx"
               >
-                <v-card
-                  @click="getConversation(chatPartner._id)"
-                  class="ma-2 pa-1"
-                  outlined
-                >
-                  <div class="py-3">
-                    <span class="mr-4">
-                      <v-avatar size="50">
-                        <v-img
-                          :src="
-                            chatPartner.profilePicture
-                              ? chatPartner.profilePicture
-                              : profileImage
-                          "
-                        ></v-img> </v-avatar
-                    ></span>
-                    <span class="subtitle-1">{{ chatPartner.username }} </span>
-                  </div>
-                </v-card>
-              </v-col>
+                <v-col class="pa-0">
+                  <v-card class="ma-2 pa-1" outlined :elevation="hover ? 2 : 0">
+                    <div class="py-3">
+                      <v-row>
+                        <v-col
+                          class="cursor-pointer"
+                          cols="8"
+                          @click="getConversation(chatPartner._id)"
+                        >
+                          <span>
+                            <v-avatar size="50">
+                              <v-img
+                                :src="
+                                  chatPartner.profilePicture
+                                    ? chatPartner.profilePicture
+                                    : profileImage
+                                "
+                              >
+                              </v-img>
+                            </v-avatar>
+                          </span>
+                          <span align-self="center" class="subtitle-1 ml-2"
+                            >{{ chatPartner.username }}
+                          </span>
+                        </v-col>
+                        <v-col class="" cols="4">
+                          <v-btn
+                            v-if="hover"
+                            outlined
+                            small
+                            color="black"
+                            text
+                            fab
+                            @click="deleteConversation(chatPartner._id)"
+                            ><v-icon>mdi-close</v-icon></v-btn
+                          ></v-col
+                        >
+                      </v-row>
+                    </div>
+                  </v-card>
+                </v-col>
+              </v-hover>
             </v-col>
           </v-row>
         </v-col>
@@ -104,7 +145,7 @@
             >
               <v-col>
                 <div cols="12" class="">
-                  <span class="mr-4" @click="handleOnelineClick(onlineFriend)">
+                  <span class="mr-4" @click="handleOnlineClick(onlineFriend)">
                     <v-badge
                       bordered
                       right
@@ -169,6 +210,13 @@ export default {
       profilePic:
         "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
       receiverId: "",
+
+      users: ["Afghanistan", "Albani"],
+      usernameLimit: 60,
+      entries: [],
+      isLoading: false,
+      model: null,
+      search: null,
     };
   },
 
@@ -218,7 +266,7 @@ export default {
         .get(`http://localhost:4000/api/conversations/${partner_id}`)
         .then((res) => {
           userConversations = [...res.data];
-          console.log(res.data, "conversations");
+          console.log(res.data, "conversations", partner_id, "partnerId");
 
           // the message is set to empty to prevent concatenating of messages from different conversations
           this.messages = [];
@@ -306,6 +354,7 @@ export default {
       });
     },
 
+    // Haven't used it yet ..... PROBABILY the bug killing me
     addingArrivalMessage() {
       if (
         this.arrivalMessage &&
@@ -339,7 +388,7 @@ export default {
       });
     },
 
-    handleOnelineClick(person) {
+    handleOnlineClick(person) {
       axios
         .get(
           `http://localhost:4000/api/conversations/find/${this.userId}/${person._id}`
@@ -353,6 +402,128 @@ export default {
         })
         .catch((err) => console.log(err));
     },
+
+    // this.fields[0].value is set when you search and click on one of the result
+    createConversation() {
+      axios
+        .post(`http://localhost:4000/api/conversations/`, {
+          senderId: this.userId,
+          receiverId: this.fields[0].value,
+        })
+        .then((res) => {
+          this.currentConversation = res.data;
+          // Getting conversation and getMessages function retyped
+          this.currentConversationBoolean = true;
+
+          // then identify the member who is chatting with the current user
+          this.receiverId = this.fields[0].value;
+          let userConversations = [];
+          axios
+            .get(`http://localhost:4000/api/conversations/${this.receiverId}`)
+            .then((response) => {
+              userConversations = [...response.data];
+
+              // the message is set to empty to prevent concatenating of messages from different conversations
+              this.messages = [];
+              userConversations.forEach((conversation) => {
+                this.getMessages(conversation._id);
+              });
+            })
+            .catch((err) => console.log(err));
+        })
+        .catch((err) => console.log(err));
+    },
+
+    startConversation() {
+      this.createConversation();
+    },
+
+    deleteConversation(partnerId) {
+      axios
+        .get(
+          `http://localhost:4000/api/conversations/find/${this.userId}/${partnerId}`
+        )
+        .then((response) => {
+          let conversation = response.data;
+
+          let updateChatPartnersAfterDelete = [...this.userChatPartners];
+          // Deleting from backend
+          axios
+            .delete(
+              `http://localhost:4000/api/conversations/${this.userId}/${partnerId}/${conversation._id}`
+            )
+            .then((res) => {
+              if (res.status >= 200 && res.status < 400) {
+                // Deleting from frontend
+                updateChatPartnersAfterDelete.forEach(
+                  (userChatPartner, idx, chatPartners) => {
+                    if (userChatPartner._id === partnerId) {
+                      chatPartners.splice(idx, 1);
+                    }
+                  }
+                );
+                // update userChatPartners after deleting from frontend
+                this.userChatPartners = updateChatPartnersAfterDelete;
+                console.log(res.data);
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        })
+        .catch((err) => console.log(err));
+    },
+  },
+
+  computed: {
+    fields() {
+      if (!this.model) return [];
+
+      // 3 When a user selects from the list, it generates an array of objects of the user details,
+      // (i.e. this.fields = [{_id: 'sdfwe'}, {username: 'myk'}, ...] )
+      return Object.keys(this.model).map((key) => {
+        return {
+          key,
+          value: this.model[key] || "",
+        };
+      });
+    },
+
+    // 2 When the entries is set, it displays the list using the attribute(i.e. username) you specified
+    itemsItems() {
+      return this.entries.map((entry) => {
+        const Username =
+          entry.username.length > this.usernameLimit
+            ? entry.username.slice(0, this.usernameLimit) + "..."
+            : entry.username;
+
+        return Object.assign({}, entry, { Username });
+      });
+    },
+  },
+
+  watch: {
+    // 1 When a user types, it fetches data and sets the entries
+    search() {
+      // Items have already been loaded
+      if (this.itemsItems.length > 0) return;
+
+      // Items have already been requested
+      if (this.isLoading) return;
+
+      this.isLoading = true;
+
+      // Lazily load input items
+      axios
+        .get(`http://localhost:4000/api/users/`)
+        .then((res) => {
+          this.entries = res.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => (this.isLoading = false));
+    },
   },
 
   mounted() {
@@ -362,7 +533,16 @@ export default {
     this.sendMessageToServer();
     this.getFriends();
     // this.setOnlineFriends();
-    console.log(this.receiverId, "friendssssRECEIVER");
+
+    // When there's a change in this.fields, it calls the startConversation() function
+    this.$watch(
+      "fields",
+      function () {
+        console.log("a thing changed");
+        this.startConversation();
+      },
+      { deep: true }
+    );
   },
 };
 </script>
@@ -405,5 +585,9 @@ export default {
   cursor: pointer;
   background-color: teal;
   color: white;
+}
+
+.cursor-pointer:hover {
+  cursor: pointer;
 }
 </style>
