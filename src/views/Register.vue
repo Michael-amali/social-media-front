@@ -78,6 +78,28 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-snackbar
+      v-model="snackbar"
+      timeout="4000"
+      top
+      center
+      shaped
+      :color="snackbarColor ? 'green' : 'red darken-2'"
+    >
+      {{ snackBarText }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          text outlined
+          fab
+          v-bind="attrs"
+          x-small
+          color=""
+          @click="snackbar = false"
+        >
+          <v-icon>mdi-close </v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 <script>
@@ -104,9 +126,7 @@ export default {
       loadingBtn: false,
       loading: false,
       signUpFormValid: true,
-      snackBarText: "",
       loginFormValid: true,
-      snackbar: false,
       upgradeValue: null,
       nameRules: [(value) => !!value || "Username is required"],
       selectRules: [(v) => !!v || "Select a payment option"],
@@ -124,6 +144,10 @@ export default {
         (value) => !!value || "Password is required",
         // (value) => value > 5 || "Password must be valid",
       ],
+      snackBarText: "",
+      snackbar: false,
+      snackbarColor: null,
+
     };
   },
   methods: {
@@ -142,7 +166,11 @@ export default {
             this.$router.push("/login");
           }
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          let errorMsg = err.response.data;
+          this.snackbar = true;
+          this.snackBarText = `${errorMsg}`;
+        });
     },
   },
 };

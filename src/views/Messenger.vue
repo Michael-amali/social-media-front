@@ -175,6 +175,28 @@
         </v-col>
       </v-row>
     </v-container>
+    <v-snackbar
+      v-model="snackbar"
+      timeout="4000"
+      top
+      center
+      shaped
+      :color="snackbarColor ? 'green' : 'red darken-2'"
+    >
+      {{ snackBarText }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          text outlined
+          fab
+          v-bind="attrs"
+          x-small
+          color=""
+          @click="snackbar = false"
+        >
+          <v-icon>mdi-close </v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
@@ -217,6 +239,10 @@ export default {
       isLoading: false,
       model: null,
       search: null,
+
+      snackBarText: "",
+      snackbar: false,
+      snackbarColor: null,
     };
   },
 
@@ -464,11 +490,17 @@ export default {
                 );
                 // update userChatPartners after deleting from frontend
                 this.userChatPartners = updateChatPartnersAfterDelete;
-                console.log(res.data);
+                this.currentConversationBoolean = false;
+                // console.log(res.data);
+                this.snackBarText = res.data;
+                this.snackbar = true;
+                this.snackbarColor = true;
               }
             })
             .catch((err) => {
-              console.log(err);
+              let errorMsg = err.response.data;
+              this.snackbar = true;
+              this.snackBarText = `${errorMsg}`;
             });
         })
         .catch((err) => console.log(err));

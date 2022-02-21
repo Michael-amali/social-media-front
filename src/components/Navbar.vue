@@ -7,7 +7,9 @@
         v-show="$vuetify.breakpoint.smAndDown"
       ></v-app-bar-nav-icon>
 
-      <v-toolbar-title @click="goToHome" class="cursor-pointer">Legend</v-toolbar-title>
+      <v-toolbar-title @click="goToHome" class="cursor-pointer"
+        >Legend</v-toolbar-title
+      >
       <v-spacer></v-spacer>
       <v-row class="ml-1">
         <v-col cols="12">
@@ -90,9 +92,8 @@
         <v-list-item
           v-for="item in items"
           :key="item.title"
-          link
-          :to="item.link"
           class="my-6"
+          @click="navigationDrawer(item)"
         >
           <v-list-item-icon>
             <v-icon>{{ item.icon }}</v-icon>
@@ -146,7 +147,7 @@ export default {
       profileImage:
         "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
 
-      users: ["Afghanistan", "Albani"],
+      users: [],
       usernameLimit: 60,
       entries: [],
       isLoading: false,
@@ -169,7 +170,7 @@ export default {
     },
     goToProfile() {
       this.$router.push(`/profile/${this.username}/${this.userId}`);
-      location.reload();
+      // location.reload();
     },
 
     goToMessenger() {
@@ -182,6 +183,25 @@ export default {
       } else if (item.title === "Profile") {
         this.goToProfile();
         location.reload();
+      }
+    },
+
+    navigationDrawer(item) {
+      if (item.title === "Feed") {
+        this.goToHome();
+      } else if (item.title === "Message") {
+        this.goToMessenger();
+        location.reload();
+      } else if (item.title === "Profile") {
+        this.goToProfile();
+        location.reload();
+      } else if (item.title === "Logout") {
+        this.logOut();
+        location.reload();
+      } else if (item.title === "Settings") {
+        this.goToProfile();
+      } else if (item.title === "Notification") {
+        this.goToProfile();
       }
     },
 
@@ -204,10 +224,12 @@ export default {
         .catch((err) => console.log(err));
     },
 
-    goToSearchedUserProfile(){
-      this.$router.push(`/profile/${this.fields[1].value}/${this.fields[0].value}`);
+    goToSearchedUserProfile() {
+      this.$router.push(
+        `/profile/${this.fields[1].value}/${this.fields[0].value}`
+      );
       // this.$router.go()
-    }
+    },
   },
 
   computed: {

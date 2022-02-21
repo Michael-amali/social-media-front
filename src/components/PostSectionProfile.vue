@@ -211,6 +211,28 @@
     <v-overlay :value="uploadOverlay">
       <v-progress-circular indeterminate size="100"></v-progress-circular>
     </v-overlay>
+    <v-snackbar
+      v-model="snackbar"
+      timeout="4000"
+      top
+      center
+      shaped
+      :color="snackbarColor ? 'green' : 'red darken-2'"
+    >
+      {{ snackBarText }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          text outlined
+          fab
+          v-bind="attrs"
+          x-small
+          color=""
+          @click="snackbar = false"
+        >
+          <v-icon>mdi-close </v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -247,6 +269,9 @@ export default {
         "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
 
       friendsList: [],
+      snackBarText: "",
+      snackbar: false,
+      snackbarColor: null,
     };
   },
   methods: {
@@ -383,7 +408,11 @@ export default {
             console.log("Post successfully deleted");
           }
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          let errorMsg = err.response.data;
+          this.snackbar = true;
+          this.snackBarText = `${errorMsg}`;
+        });
     },
 
     popUpDrawer(item, postId) {

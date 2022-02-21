@@ -411,6 +411,28 @@
     <v-overlay :value="uploadOverlay">
       <v-progress-circular indeterminate size="100"></v-progress-circular>
     </v-overlay>
+    <v-snackbar
+      v-model="snackbar"
+      timeout="4000"
+      top
+      center
+      shaped
+      :color="snackbarColor ? 'green' : 'red darken-2'"
+    >
+      {{ snackBarText }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          text outlined
+          fab
+          v-bind="attrs"
+          x-small
+          color=""
+          @click="snackbar = false"
+        >
+          <v-icon>mdi-close </v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
@@ -457,6 +479,10 @@ export default {
       previewCoverImageDialog: false,
       editProfilePicBoolean: false,
       editCoverPicBoolean: false,
+
+      snackBarText: "",
+      snackbar: false,
+      snackbarColor: null,
     };
   },
   methods: {
@@ -499,11 +525,16 @@ export default {
           userId: this.userId,
         })
         .then((res) => {
-          console.log(res);
+          // console.log(res);
+          this.snackBarText = res.data;
+          this.snackbar = true;
+          this.snackbarColor = true;
           location.reload();
         })
         .catch((err) => {
-          console.log(err);
+          let errorMsg = err.response.data;
+          this.snackbar = true;
+          this.snackBarText = `${errorMsg}`;
         });
     },
 
@@ -513,11 +544,16 @@ export default {
           userId: this.userId,
         })
         .then((res) => {
-          console.log(res);
+          // console.log(res);
+          this.snackBarText = res.data;
+          this.snackbar = true;
+          this.snackbarColor = true;
           location.reload();
         })
         .catch((err) => {
-          console.log(err);
+          let errorMsg = err.response.data;
+          this.snackbar = true;
+          this.snackBarText = `${errorMsg}`;
         });
     },
 
@@ -555,10 +591,17 @@ export default {
         })
         .then((res) => {
           this.editUserInfoDialog = false;
+          this.snackBarText = res.data;
+          this.snackbar = true;
+          this.snackbarColor = true;
           location.reload();
           console.log(res.data);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          let errorMsg = err.response.data;
+          this.snackbar = true;
+          this.snackBarText = `${errorMsg}`;
+        });
     },
 
     handleFileImportProfile() {
@@ -667,10 +710,18 @@ export default {
           this.previewProfileDialog = false;
           // resetting dialog decider
           this.editProfilePicBoolean = false;
+
+          this.snackBarText = res.data;
+          this.snackbar = true;
+          this.snackbarColor = true;
           location.reload();
           console.log(res.data);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          let errorMsg = err.response.data;
+          this.snackbar = true;
+          this.snackBarText = `${errorMsg}`;
+        });
     },
 
     uploadCoverImage() {
@@ -683,10 +734,18 @@ export default {
           this.previewCoverImageDialog = false;
           // resetting dialog decider
           this.editCoverPicBoolean = false;
+
+          this.snackBarText = res.data;
+          this.snackbar = true;
+          this.snackbarColor = true;
           location.reload();
           console.log(res.data);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          let errorMsg = err.response.data;
+          this.snackbar = true;
+          this.snackBarText = `${errorMsg}`;
+        });
     },
 
     deleteCloudinaryImage() {
@@ -704,7 +763,11 @@ export default {
           location.reload();
           console.log(res.data);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          let errorMsg = err.response.data;
+          this.snackbar = true;
+          this.snackBarText = `${errorMsg}`;
+        });
     },
 
     // Get conversation between LoggedIn user and chatPartner
@@ -727,7 +790,11 @@ export default {
             this.getMessages(conversation._id);
           });
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          let errorMsg = err.response.data;
+          this.snackbar = true;
+          this.snackBarText = `${errorMsg}`;
+        });
     },
 
     getMessages(conversationId) {
@@ -744,7 +811,11 @@ export default {
         .then((res) => {
           this.messages.push(res.data);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          let errorMsg = err.response.data;
+          this.snackbar = true;
+          this.snackBarText = `${errorMsg}`;
+        });
     },
 
     createConversation() {
@@ -776,7 +847,11 @@ export default {
             })
             .catch((err) => console.log(err));
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          let errorMsg = err.response.data;
+          this.snackbar = true;
+          this.snackBarText = `${errorMsg}`;
+        });
     },
 
     startConversation() {

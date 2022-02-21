@@ -4,7 +4,9 @@
       <v-col>
         <v-card flat outlined>
           <v-row>
-            <v-col class="hidden-sm-and-down"><v-img :src="loginImage" height="600"></v-img></v-col>
+            <v-col class="hidden-sm-and-down"
+              ><v-img :src="loginImage" height="600"></v-img
+            ></v-col>
             <v-col class="" align-self="center">
               <v-card-text>
                 <v-form
@@ -74,6 +76,28 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-snackbar
+      v-model="snackbar"
+      timeout="4000"
+      top
+      center
+      shaped
+      :color="snackbarColor ? 'green' : 'red darken-2'"
+    >
+      {{ snackBarText }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          text outlined
+          fab
+          v-bind="attrs"
+          x-small
+          color=""
+          @click="snackbar = false"
+        >
+          <v-icon>mdi-close </v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -113,7 +137,7 @@ export default {
       signUpFormValid: true,
       snackBarText: "",
       snackbar: false,
-      upgradeValue: null,
+      snackbarColor: null,
       nameRules: [(value) => !!value || "Username is required"],
       loginEmailRules: [
         (value) => !!value || "E-mail is required",
@@ -159,11 +183,18 @@ export default {
             localStorage.setItem("email", res.data.email);
             localStorage.setItem("username", res.data.username);
             localStorage.setItem("userId", res.data._id);
+            this.snackbarColor = true;
+            this.snackbar = true;
             this.$router.push("/");
-            location.reload();
+            // location.reload();
           }
+
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          let errorMsg = err.response.data;
+          this.snackbar = true;
+          this.snackBarText = `${errorMsg}`;
+        });
     },
   },
 };
