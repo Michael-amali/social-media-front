@@ -277,6 +277,7 @@
 <script>
 import axios from "axios";
 import { CLOUD_NAME, CLOUD_UPLOAD_PRESET } from "../../env";
+import { BASE_URL } from '../../env.js'
 
 export default {
   name: "PostSection",
@@ -314,7 +315,7 @@ export default {
     // Preview post method
     previewPost() {
       axios
-        .post("http://localhost:4000/api/posts/", {
+        .post(`${BASE_URL}/api/posts/`, {
           userId: this.userId,
           desc: this.descriptionPost,
           img: this.fileUrl,
@@ -403,7 +404,7 @@ export default {
     // Get all posts timeline
     getAllPosts() {
       axios
-        .get(`http://localhost:4000/api/posts/timeline/${this.userId}`)
+        .get(`${BASE_URL}/api/posts/timeline/${this.userId}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.allPosts = [...res.data];
@@ -415,7 +416,7 @@ export default {
 
     getSinglePost(postId) {
       axios
-        .get(`http://localhost:4000/api/posts/find/${postId}`)
+        .get(`${BASE_URL}/api/posts/find/${postId}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.singlePost = { ...res.data };
@@ -429,7 +430,7 @@ export default {
       let updateAllPosts = [...this.allPosts];
 
       axios
-        .delete(`http://localhost:4000/api/posts/${postId}/${this.userId}`)
+        .delete(`${BASE_URL}/api/posts/${postId}/${this.userId}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             // Deleting from frontend
@@ -458,7 +459,7 @@ export default {
     getSingleUser() {
       axios
         .get(
-          `http://localhost:4000/api/users/find?userId=${this.userId}&username=${this.username}`
+          `${BASE_URL}/api/users/find?userId=${this.userId}&username=${this.username}`
         )
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
@@ -472,7 +473,7 @@ export default {
     // like in the backend
     likePost(post) {
       axios
-        .put(`http://localhost:4000/api/posts/${post._id}/like/${this.userId}`)
+        .put(`${BASE_URL}/api/posts/${post._id}/like/${this.userId}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
 
@@ -502,7 +503,7 @@ export default {
 
     getFriends() {
       axios
-        .get(`http://localhost:4000/api/users/friends/${this.userId}`)
+        .get(`${BASE_URL}/api/users/friends/${this.userId}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.friendsList = [...res.data];

@@ -4,7 +4,9 @@
       <v-col>
         <v-card flat outlined>
           <v-row>
-            <v-col class="hidden-sm-and-down"><v-img :src="registerImage" height="600"></v-img></v-col>
+            <v-col class="hidden-sm-and-down"
+              ><v-img :src="registerImage" height="600"></v-img
+            ></v-col>
             <v-col class="" align-self="center">
               <v-card-text>
                 <v-form
@@ -89,7 +91,8 @@
       {{ snackBarText }}
       <template v-slot:action="{ attrs }">
         <v-btn
-          text outlined
+          text
+          outlined
           fab
           v-bind="attrs"
           x-small
@@ -104,6 +107,7 @@
 </template>
 <script>
 import axios from "axios";
+import { BASE_URL } from "../../env.js";
 
 export default {
   name: "Register",
@@ -147,7 +151,6 @@ export default {
       snackBarText: "",
       snackbar: false,
       snackbarColor: null,
-
     };
   },
   methods: {
@@ -156,7 +159,7 @@ export default {
     },
     register() {
       axios
-        .post("http://localhost:4000/api/auth/register", {
+        .post(`${BASE_URL}/api/auth/register`, {
           username: this.signUpName,
           email: this.signUpEmail,
           password: this.signUpPassword,

@@ -239,6 +239,7 @@
 <script>
 import axios from "axios";
 import { CLOUD_NAME, CLOUD_UPLOAD_PRESET } from "../../env";
+import {BASE_URL} from '../../env'
 
 export default {
   name: "PostSection",
@@ -278,7 +279,7 @@ export default {
     // Preview post method
     previewPost() {
       axios
-        .post("http://localhost:4000/api/posts/", {
+        .post(`${BASE_URL}/api/posts/`, {
           userId: this.userId,
           desc: this.descriptionPost,
           img: this.fileUrl,
@@ -368,7 +369,7 @@ export default {
     getAllPosts() {
       axios
         .get(
-          `http://localhost:4000/api/posts/profile/${this.username}/${this.currentUserId}`
+          `${BASE_URL}/api/posts/profile/${this.username}/${this.currentUserId}`
         )
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
@@ -380,7 +381,7 @@ export default {
 
     getSinglePost(postId) {
       axios
-        .get(`http://localhost:4000/api/posts/find/${postId}`)
+        .get(`${BASE_URL}/api/posts/find/${postId}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.singlePost = { ...res.data };
@@ -393,7 +394,7 @@ export default {
       let updateAllPosts = [...this.allPosts];
       // Deleting from backend
       axios
-        .delete(`http://localhost:4000/api/posts/${postId}/${this.userId}`)
+        .delete(`${BASE_URL}/api/posts/${postId}/${this.userId}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
 
@@ -423,7 +424,7 @@ export default {
 
     getSingleUser() {
       axios
-        .get(`http://localhost:4000/api/users/find?username=${this.username}`)
+        .get(`${BASE_URL}/api/users/find?username=${this.username}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.singleUser = { ...res.data };
@@ -435,7 +436,7 @@ export default {
 
     getFriends() {
       axios
-        .get(`http://localhost:4000/api/users/friends/${this.userId}`)
+        .get(`${BASE_URL}/api/users/friends/${this.userId}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.friendsList = [...res.data];

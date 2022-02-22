@@ -441,6 +441,7 @@ import PostSectionProfile from "../components/PostSectionProfile.vue";
 import NavbarNew from "../components/Navbar.vue";
 import { CLOUD_NAME, CLOUD_UPLOAD_PRESET } from "../../env";
 import axios from "axios";
+import { BASE_URL } from "../../env.js";
 
 export default {
   name: "ProfilePage",
@@ -488,7 +489,7 @@ export default {
   methods: {
     getSingleUser() {
       axios
-        .get(`http://localhost:4000/api/users/find?username=${this.username}`)
+        .get(`${BASE_URL}/api/users/find?username=${this.username}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.singleUser = { ...res.data };
@@ -500,7 +501,7 @@ export default {
     getFriends() {
       axios
         .get(
-          `http://localhost:4000/api/users/friends/${
+          `${BASE_URL}/api/users/friends/${
             this.userId === this.currentUserId
               ? this.userId
               : this.currentUserId
@@ -521,7 +522,7 @@ export default {
 
     followUser() {
       axios
-        .put(`http://localhost:4000/api/users/${this.currentUserId}/follow`, {
+        .put(`${BASE_URL}/api/users/${this.currentUserId}/follow`, {
           userId: this.userId,
         })
         .then((res) => {
@@ -540,7 +541,7 @@ export default {
 
     unFollowUser() {
       axios
-        .put(`http://localhost:4000/api/users/${this.currentUserId}/unfollow`, {
+        .put(`${BASE_URL}/api/users/${this.currentUserId}/unfollow`, {
           userId: this.userId,
         })
         .then((res) => {
@@ -561,7 +562,7 @@ export default {
     getAllPosts() {
       axios
         .get(
-          `http://localhost:4000/api/posts/profile/${this.username}/${this.currentUserId}`
+          `${BASE_URL}/api/posts/profile/${this.username}/${this.currentUserId}`
         )
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
@@ -582,7 +583,7 @@ export default {
 
     updateUserInfo() {
       axios
-        .put(`http://localhost:4000/api/users/${this.userId}`, {
+        .put(`${BASE_URL}/api/users/${this.userId}`, {
           userId: this.userId,
           desc: this.description,
           city: this.city,
@@ -702,7 +703,7 @@ export default {
 
     uploadProfileImage() {
       axios
-        .put(`http://localhost:4000/api/users/${this.userId}`, {
+        .put(`${BASE_URL}/api/users/${this.userId}`, {
           userId: this.userId,
           profilePicture: this.fileUrl,
         })
@@ -726,7 +727,7 @@ export default {
 
     uploadCoverImage() {
       axios
-        .put(`http://localhost:4000/api/users/${this.userId}`, {
+        .put(`${BASE_URL}/api/users/${this.userId}`, {
           userId: this.userId,
           coverPicture: this.fileUrl,
         })
@@ -755,7 +756,7 @@ export default {
       let cloudId = this.fileUrl.split("/").slice(-1)[0].split(".")[0];
       axios
         .delete(
-          `http://localhost:4000/api/posts/${this.userId}/${cloudId}/remove`
+          `${BASE_URL}/api/posts/${this.userId}/${cloudId}/remove`
         )
         .then((res) => {
           this.previewProfileDialog = false;
@@ -779,7 +780,7 @@ export default {
 
       let userConversations = [];
       axios
-        .get(`http://localhost:4000/api/conversations/${partner_id}`)
+        .get(`${BASE_URL}/api/conversations/${partner_id}`)
         .then((res) => {
           userConversations = [...res.data];
           console.log(res.data, "conversations");
@@ -807,7 +808,7 @@ export default {
       console.log(this.currentConversation, "current-conversations");
 
       axios
-        .get(`http://localhost:4000/api/messages/${conversationId}`)
+        .get(`${BASE_URL}/api/messages/${conversationId}`)
         .then((res) => {
           this.messages.push(res.data);
         })
@@ -820,7 +821,7 @@ export default {
 
     createConversation() {
       axios
-        .post(`http://localhost:4000/api/conversations/`, {
+        .post(`${BASE_URL}/api/conversations/`, {
           senderId: this.userId,
           receiverId: this.currentUserId,
         })
@@ -833,7 +834,7 @@ export default {
           this.receiverId = this.currentUserId;
           let userConversations = [];
           axios
-            .get(`http://localhost:4000/api/conversations/${this.receiverId}`)
+            .get(`${BASE_URL}/api/conversations/${this.receiverId}`)
             .then((response) => {
               userConversations = [...response.data];
 

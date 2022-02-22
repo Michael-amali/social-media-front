@@ -118,6 +118,7 @@
 <script>
 import axios from "axios";
 import { logoutUser } from "../services/auth";
+import { BASE_URL} from '../../env.js'
 
 export default {
   name: "Navbar",
@@ -214,7 +215,7 @@ export default {
     getSingleUser() {
       axios
         .get(
-          `http://localhost:4000/api/users/find?userId=${this.userId}&username=${this.username}`
+          `${BASE_URL}/api/users/find?userId=${this.userId}&username=${this.username}`
         )
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
@@ -275,7 +276,7 @@ export default {
 
       // Lazily load input items
       axios
-        .get(`http://localhost:4000/api/users/`)
+        .get(`${BASE_URL}/api/users/`)
         .then((res) => {
           this.entries = res.data;
         })

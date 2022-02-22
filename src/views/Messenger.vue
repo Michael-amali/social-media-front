@@ -205,6 +205,7 @@ import Navbar from "../components/Navbar.vue";
 import Message from "../components/Message.vue";
 import axios from "axios";
 import { io } from "socket.io-client";
+import { BASE_URL } from "../../env.js";
 
 export default {
   name: "Messenger",
@@ -249,7 +250,7 @@ export default {
   methods: {
     getConversations() {
       axios
-        .get(`http://localhost:4000/api/conversations/${this.userId}`)
+        .get(`${BASE_URL}/api/conversations/${this.userId}`)
         .then((res) => {
           this.conversations = [...res.data];
           console.log(this.conversations, "---------convo");
@@ -272,7 +273,7 @@ export default {
       // Using id to get userChatPartners details
       userchatPartnersArray.forEach((partner_id) => {
         axios
-          .get(`http://localhost:4000/api/users/find?userId=${partner_id}`)
+          .get(`${BASE_URL}/api/users/find?userId=${partner_id}`)
           .then((res) => {
             this.userChatPartners.push(res.data);
           })
@@ -289,7 +290,7 @@ export default {
 
       let userConversations = [];
       axios
-        .get(`http://localhost:4000/api/conversations/${partner_id}`)
+        .get(`${BASE_URL}/api/conversations/${partner_id}`)
         .then((res) => {
           userConversations = [...res.data];
           console.log(res.data, "conversations", partner_id, "partnerId");
@@ -313,7 +314,7 @@ export default {
       console.log(this.currentConversation, "current-conversations");
 
       axios
-        .get(`http://localhost:4000/api/messages/${conversationId}`)
+        .get(`${BASE_URL}/api/messages/${conversationId}`)
         .then((res) => {
           this.messages.push(res.data);
           this.scrollToLastMessage();
@@ -335,7 +336,7 @@ export default {
       });
 
       axios
-        .post(`http://localhost:4000/api/messages/`, messageData)
+        .post(`${BASE_URL}/api/messages/`, messageData)
         .then((res) => {
           // updating the messages array
           this.messages = [...this.messages, res.data];
@@ -392,7 +393,7 @@ export default {
 
     getFriends() {
       axios
-        .get(`http://localhost:4000/api/users/friends/${this.userId}`)
+        .get(`${BASE_URL}/api/users/friends/${this.userId}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.friendsList = [...res.data];
@@ -417,7 +418,7 @@ export default {
     handleOnlineClick(person) {
       axios
         .get(
-          `http://localhost:4000/api/conversations/find/${this.userId}/${person._id}`
+          `${BASE_URL}/api/conversations/find/${this.userId}/${person._id}`
         )
         .then((res) => {
           let conversation = res.data;
@@ -432,7 +433,7 @@ export default {
     // this.fields[0].value is set when you search and click on one of the result
     createConversation() {
       axios
-        .post(`http://localhost:4000/api/conversations/`, {
+        .post(`${BASE_URL}/api/conversations/`, {
           senderId: this.userId,
           receiverId: this.fields[0].value,
         })
@@ -445,7 +446,7 @@ export default {
           this.receiverId = this.fields[0].value;
           let userConversations = [];
           axios
-            .get(`http://localhost:4000/api/conversations/${this.receiverId}`)
+            .get(`${BASE_URL}/api/conversations/${this.receiverId}`)
             .then((response) => {
               userConversations = [...response.data];
 
@@ -467,7 +468,7 @@ export default {
     deleteConversation(partnerId) {
       axios
         .get(
-          `http://localhost:4000/api/conversations/find/${this.userId}/${partnerId}`
+          `${BASE_URL}/api/conversations/find/${this.userId}/${partnerId}`
         )
         .then((response) => {
           let conversation = response.data;
@@ -476,7 +477,7 @@ export default {
           // Deleting from backend
           axios
             .delete(
-              `http://localhost:4000/api/conversations/${this.userId}/${partnerId}/${conversation._id}`
+              `${BASE_URL}/api/conversations/${this.userId}/${partnerId}/${conversation._id}`
             )
             .then((res) => {
               if (res.status >= 200 && res.status < 400) {
@@ -547,7 +548,7 @@ export default {
 
       // Lazily load input items
       axios
-        .get(`http://localhost:4000/api/users/`)
+        .get(`${BASE_URL}/api/users/`)
         .then((res) => {
           this.entries = res.data;
         })

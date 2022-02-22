@@ -104,6 +104,7 @@
 <script>
 import axios from "axios";
 import { setAuthToken, setUserId } from "../services/auth";
+import { BASE_URL } from "../../env.js";
 
 export default {
   name: "Login",
@@ -167,7 +168,7 @@ export default {
     },
     login() {
       axios
-        .post("http://localhost:4000/api/auth/login", {
+        .post(`${BASE_URL}/api/auth/login`, {
           email: this.loginEmail,
           password: this.loginPassword,
         })
