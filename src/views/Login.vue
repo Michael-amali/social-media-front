@@ -123,7 +123,6 @@ export default {
         { title: "about", icon: "cart", text: "Cart" },
       ],
       credentialDialog: false,
-      tab: "tab-1",
       loginEmail: "",
       loginPassword: "",
       loginPasswordShow: false,
@@ -187,7 +186,7 @@ export default {
             this.snackbarColor = true;
             this.snackbar = true;
             this.$router.push("/");
-            // location.reload();
+            location.reload();
           }
 
         })
