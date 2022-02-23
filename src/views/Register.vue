@@ -57,7 +57,7 @@
                       <v-btn
                         color="primary darken-1"
                         block
-                        :loading="loadingBtn"
+                        :loading="registerLoader"
                         :disabled="!loginFormValid"
                         @click="register"
                       >
@@ -127,7 +127,7 @@ export default {
       ],
       credentialDialog: false,
       message: "",
-      loadingBtn: false,
+      registerLoader: false,
       loading: false,
       signUpFormValid: true,
       loginFormValid: true,
@@ -158,6 +158,7 @@ export default {
       this.$router.push("/login");
     },
     register() {
+      this.registerLoader = true;
       axios
         .post(`${BASE_URL}/api/auth/register`, {
           username: this.signUpName,
@@ -167,12 +168,14 @@ export default {
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.$router.push("/login");
+            this.registerLoader = false;
           }
         })
         .catch((err) => {
           let errorMsg = err.response.data;
           this.snackbar = true;
           this.snackBarText = `${errorMsg}`;
+          this.registerLoader = false;
         });
     },
   },

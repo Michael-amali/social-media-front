@@ -74,7 +74,11 @@
 
         <!-- Not editable profile picture -->
         <div class="d-flex justify-center mt-n16" v-else>
-          <v-avatar class="outlined cursor-pointer" color="blue-grey darken-2" size="180">
+          <v-avatar
+            class="outlined cursor-pointer"
+            color="blue-grey darken-2"
+            size="180"
+          >
             <v-avatar size="170">
               <v-img
                 :src="
@@ -334,7 +338,12 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="primary darken-1" outlined @click="updateUserInfo">
+              <v-btn
+                color="primary darken-1"
+                outlined
+                @click="updateUserInfo"
+                :loading="editInfoLoader"
+              >
                 Save
               </v-btn>
             </v-card-actions>
@@ -422,7 +431,8 @@
       {{ snackBarText }}
       <template v-slot:action="{ attrs }">
         <v-btn
-          text outlined
+          text
+          outlined
           fab
           v-bind="attrs"
           x-small
@@ -450,6 +460,8 @@ export default {
   data() {
     return {
       singleUser: null,
+      loading: false,
+      editInfoLoader: false,
       userId: localStorage.getItem("userId"),
       username: this.$route.params.username,
       currentUserId: this.$route.params.id,
@@ -582,6 +594,7 @@ export default {
     },
 
     updateUserInfo() {
+      this.editInfoLoader = true;
       axios
         .put(`${BASE_URL}/api/users/${this.userId}`, {
           userId: this.userId,
@@ -595,6 +608,7 @@ export default {
           this.snackBarText = res.data;
           this.snackbar = true;
           this.snackbarColor = true;
+          this.editInfoLoader = false;
           location.reload();
           console.log(res.data);
         })
@@ -602,6 +616,7 @@ export default {
           let errorMsg = err.response.data;
           this.snackbar = true;
           this.snackBarText = `${errorMsg}`;
+          this.editInfoLoader = false;
         });
     },
 
@@ -755,9 +770,7 @@ export default {
       // Retrieving public_id from url of cloudinary image
       let cloudId = this.fileUrl.split("/").slice(-1)[0].split(".")[0];
       axios
-        .delete(
-          `${BASE_URL}/api/posts/${this.userId}/${cloudId}/remove`
-        )
+        .delete(`${BASE_URL}/api/posts/${this.userId}/${cloudId}/remove`)
         .then((res) => {
           this.previewProfileDialog = false;
           this.previewCoverImageDialog = false;

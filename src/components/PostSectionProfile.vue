@@ -238,8 +238,7 @@
 
 <script>
 import axios from "axios";
-import { CLOUD_NAME, CLOUD_UPLOAD_PRESET } from "../../env";
-import {BASE_URL} from '../../env'
+import { CLOUD_NAME, CLOUD_UPLOAD_PRESET, BASE_URL } from "../../env";
 
 export default {
   name: "PostSection",
@@ -292,7 +291,10 @@ export default {
             this.previewDialog = true;
           }
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+          this.uploadOverlay = false;
+        });
     },
 
     continueToPost(post) {

@@ -179,69 +179,79 @@
           </v-col>
         </v-col>
 
-        <!-- current user posts -->
+        <!-- Logged In user posts -->
         <v-col class="pa-0" v-if="post.userId === $store.state.userId">
-          <v-card>
-            <v-app-bar flat color="white">
-              <v-avatar size="40">
-                <img
-                  :src="
-                    singleUser.profilePicture
-                      ? singleUser.profilePicture
-                      : profilePic
-                  "
-                  alt="John"
-                />
-              </v-avatar>
-              <v-toolbar-title class="subtitle-1 pl-2">
-                {{ singleUser.username }}
-              </v-toolbar-title>
-              <v-spacer></v-spacer>
+          <!-- Put card within skeleton -->
+          <v-skeleton-loader :loading="homeSkeleton" type="card">
+            <v-card>
+              <v-app-bar flat color="white">
+                <v-avatar size="40">
+                  <img
+                    :src="
+                      singleUser.profilePicture
+                        ? singleUser.profilePicture
+                        : profilePic
+                    "
+                    alt="John"
+                  />
+                </v-avatar>
+                <v-toolbar-title class="subtitle-1 pl-2">
+                  {{ singleUser.username }}
+                </v-toolbar-title>
+                <v-spacer></v-spacer>
 
-              <v-menu left bottom offset-y>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn icon v-bind="attrs" v-on="on" color="black">
-                    <v-icon>mdi-dots-vertical</v-icon>
-                  </v-btn>
-                </template>
+                <v-menu left bottom offset-y>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn icon v-bind="attrs" v-on="on" color="black">
+                      <v-icon>mdi-dots-vertical</v-icon>
+                    </v-btn>
+                  </template>
 
-                <v-list>
-                  <v-list-item
-                    v-for="item in menuList"
-                    :key="item.title"
-                    @click="popUpDrawer(item, post._id)"
+                  <v-list>
+                    <v-list-item
+                      v-for="item in menuList"
+                      :key="item.title"
+                      @click="popUpDrawer(item, post._id)"
+                    >
+                      <v-list-item-title> {{ item.title }}</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </v-app-bar>
+              <v-card-text class="py-0">{{ post.desc }}</v-card-text>
+              <v-card-text class="pb-0">
+                <v-img max-height="400" :src="post.img"></v-img>
+              </v-card-text>
+              <v-card-actions>
+                <div class="text-center">
+                  <v-btn
+                    class="mx-3"
+                    fab
+                    dark
+                    x-small
+                    color="primary"
+                    elevation="0"
+                    @click="likePost(post)"
                   >
-                    <v-list-item-title> {{ item.title }}</v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-            </v-app-bar>
-            <v-card-text class="py-0">{{ post.desc }}</v-card-text>
-            <v-card-text class="pb-0">
-              <v-img max-height="400" :src="post.img"></v-img>
-            </v-card-text>
-            <v-card-actions>
-              <div class="text-center">
-                <v-btn
-                  class="mx-3"
-                  fab
-                  dark
-                  x-small
-                  color="primary"
-                  elevation="0"
-                  @click="likePost(post)"
-                >
-                  <v-icon dark>mdi-thumb-up </v-icon>
-                </v-btn>
-                <v-btn class="mr-3" fab dark x-small color="red" elevation="0">
-                  <v-icon dark> mdi-heart </v-icon>
-                </v-btn>
-                <span class="">{{ post.likes.length }} people like it</span>
-                <span class="ml-16"></span><span class="ml-16"></span>
-                <span class="ml-16 hidden-sm-and-down">Comments</span>
-              </div>
-            </v-card-actions>
-          </v-card>
+                    <v-icon dark>mdi-thumb-up </v-icon>
+                  </v-btn>
+                  <v-btn
+                    class="mr-3"
+                    fab
+                    dark
+                    x-small
+                    color="red"
+                    elevation="0"
+                  >
+                    <v-icon dark> mdi-heart </v-icon>
+                  </v-btn>
+                  <span class="">{{ post.likes.length }} people like it</span>
+                  <span class="ml-16"></span><span class="ml-16"></span>
+                  <span class="ml-16 hidden-sm-and-down">Comments</span>
+                </div>
+              </v-card-actions>
+            </v-card>
+          </v-skeleton-loader>
         </v-col>
       </v-col>
     </v-row>
@@ -260,7 +270,8 @@
       {{ snackBarText }}
       <template v-slot:action="{ attrs }">
         <v-btn
-          text outlined
+          text
+          outlined
           fab
           v-bind="attrs"
           x-small
@@ -277,7 +288,7 @@
 <script>
 import axios from "axios";
 import { CLOUD_NAME, CLOUD_UPLOAD_PRESET } from "../../env";
-import { BASE_URL } from '../../env.js'
+import { BASE_URL } from "../../env.js";
 
 export default {
   name: "PostSection",
@@ -288,6 +299,7 @@ export default {
       mediaAsset: null,
       previewDialog: false,
       descriptionPost: "",
+      homeSkeleton: true,
 
       files: [],
       isError: false,
@@ -409,9 +421,12 @@ export default {
           if (res.status >= 200 && res.status < 400) {
             this.allPosts = [...res.data];
             console.log(this.allPosts, "allPost at timeline");
+            this.homeSkeleton = false;
           }
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+        });
     },
 
     getSinglePost(postId) {
@@ -476,7 +491,6 @@ export default {
         .put(`${BASE_URL}/api/posts/${post._id}/like/${this.userId}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
-
             // update like in the frontend. So we find the specific post, if there's like we remoe and reduce else we add
             this.allPosts.forEach((singlePost) => {
               if (singlePost._id === post._id) {

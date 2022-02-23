@@ -118,7 +118,7 @@
 <script>
 import axios from "axios";
 import { logoutUser } from "../services/auth";
-import { BASE_URL} from '../../env.js'
+import { BASE_URL } from "../../env.js";
 
 export default {
   name: "Navbar",

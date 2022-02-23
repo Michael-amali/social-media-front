@@ -52,7 +52,7 @@
                       <v-btn
                         color="primary darken-1"
                         block
-                        :loading="loadingBtn"
+                        :loading="loginLoader"
                         :disabled="!loginFormValid"
                         @click="login"
                       >
@@ -87,7 +87,8 @@
       {{ snackBarText }}
       <template v-slot:action="{ attrs }">
         <v-btn
-          text outlined
+          text
+          outlined
           fab
           v-bind="attrs"
           x-small
@@ -131,7 +132,7 @@ export default {
       signUpPassword: "",
       signUpPasswordShow: false,
       message: "",
-      loadingBtn: false,
+      loginLoader: false,
       loading: false,
       loginFormValid: true,
       signUpFormValid: true,
@@ -166,6 +167,7 @@ export default {
       this.$router.push("/register");
     },
     login() {
+      this.loginLoader = true;
       axios
         .post(`${BASE_URL}/api/auth/login`, {
           email: this.loginEmail,
@@ -185,15 +187,17 @@ export default {
             localStorage.setItem("userId", res.data._id);
             this.snackbarColor = true;
             this.snackbar = true;
+            this.loginLoader = false;
+
             this.$router.push("/");
             location.reload();
           }
-
         })
         .catch((err) => {
           let errorMsg = err.response.data;
           this.snackbar = true;
           this.snackBarText = `${errorMsg}`;
+          this.loginLoader = false;
         });
     },
   },

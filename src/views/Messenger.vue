@@ -30,9 +30,18 @@
                 prepend-inner-icon="mdi-magnify"
               ></v-autocomplete>
             </v-col>
-
+            <!-- Chat -->
             <v-col cols="12" class="py-0">
-              <div class="title pl-2">Chat List</div>
+              <v-row>
+                <v-col cols="10" sm="9" md="9"
+                  ><div class="title pl-2">Chat List</div></v-col
+                >
+                <v-col cols="2" sm="3" md="3"
+                  ><v-btn fab small text @click="$router.go()"
+                    ><v-icon>mdi-refresh</v-icon></v-btn
+                  ></v-col
+                >
+              </v-row>
             </v-col>
             <!-- friends list-->
             <v-col class="pa-3">
@@ -186,7 +195,8 @@
       {{ snackBarText }}
       <template v-slot:action="{ attrs }">
         <v-btn
-          text outlined
+          text
+          outlined
           fab
           v-bind="attrs"
           x-small
@@ -417,9 +427,7 @@ export default {
 
     handleOnlineClick(person) {
       axios
-        .get(
-          `${BASE_URL}/api/conversations/find/${this.userId}/${person._id}`
-        )
+        .get(`${BASE_URL}/api/conversations/find/${this.userId}/${person._id}`)
         .then((res) => {
           let conversation = res.data;
 
@@ -467,9 +475,7 @@ export default {
 
     deleteConversation(partnerId) {
       axios
-        .get(
-          `${BASE_URL}/api/conversations/find/${this.userId}/${partnerId}`
-        )
+        .get(`${BASE_URL}/api/conversations/find/${this.userId}/${partnerId}`)
         .then((response) => {
           let conversation = response.data;
 
