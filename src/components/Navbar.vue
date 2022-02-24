@@ -8,7 +8,7 @@
       ></v-app-bar-nav-icon>
 
       <v-toolbar-title @click="goToHome" class="cursor-pointer"
-        >Legend</v-toolbar-title
+        >Legends</v-toolbar-title
       >
       <v-spacer></v-spacer>
       <v-row class="ml-1">
