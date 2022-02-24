@@ -83,10 +83,52 @@
                             color="black"
                             text
                             fab
-                            @click="deleteConversation(chatPartner._id)"
-                            ><v-icon>mdi-close</v-icon></v-btn
-                          ></v-col
-                        >
+                            @click="deleteConvoDialog = true"
+                            ><v-icon>mdi-close</v-icon>
+                          </v-btn>
+                          <!-- Delete conversation dialog -->
+                          <v-dialog
+                            v-model="deleteConvoDialog"
+                            max-width="480"
+                            :retain-focus="false"
+                          >
+                            <v-card>
+                              <v-card-title>
+                                Confirm
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                  color="black"
+                                  icon
+                                  @click="deleteConvoDialog = false"
+                                >
+                                  <v-icon>mdi-close</v-icon>
+                                </v-btn>
+                              </v-card-title>
+                              <v-card-text>
+                                Are you sure you want to delete this
+                                conversation ?
+                              </v-card-text>
+                              <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                  color="primary darken-1"
+                                  outlined
+                                  @click="deleteConvoDialog = false"
+                                >
+                                  Cancel
+                                </v-btn>
+                                <v-btn
+                                  color="primary darken-1"
+                                  outlined
+                                  :loading="deleteLoader"
+                                  @click="deleteConversation(chatPartner._id)"
+                                >
+                                  Delete
+                                </v-btn>
+                              </v-card-actions>
+                            </v-card>
+                          </v-dialog>
+                        </v-col>
                       </v-row>
                     </div>
                   </v-card>
@@ -154,7 +196,10 @@
             >
               <v-col>
                 <div cols="12" class="">
-                  <span class="mr-4" @click="handleOnlineClick(onlineFriend)">
+                  <span
+                    class="mr-4 cursor-pointer"
+                    @click="handleOnlineClick(onlineFriend)"
+                  >
                     <v-badge
                       bordered
                       right
@@ -184,6 +229,33 @@
         </v-col>
       </v-row>
     </v-container>
+
+    <!-- Delete conversation dialog -->
+    <v-dialog v-model="deleteConvoDialog" max-width="480">
+      <v-card>
+        <v-card-title>
+          Confirm
+          <v-spacer></v-spacer>
+          <v-btn color="black" icon @click="deleteConvoDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-card-text>
+          Are you sure you want to delete this conversation ?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="primary darken-1"
+            outlined
+            @click="deleteConvoDialog = false"
+          >
+            Cancel
+          </v-btn>
+          <v-btn color="primary darken-1" outlined> Delete </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-snackbar
       v-model="snackbar"
       timeout="4000"
@@ -254,6 +326,10 @@ export default {
       snackBarText: "",
       snackbar: false,
       snackbarColor: null,
+
+      confirmDelete: false,
+      deleteConvoDialog: false,
+      deleteLoader: false,
     };
   },
 
@@ -369,7 +445,8 @@ export default {
     },
 
     setSocket() {
-      this.socket = io("ws://localhost:8900");
+      // this.socket = io("ws://localhost:8900");
+      this.socket = io("https://social-media-socketio.herokuapp.com/");
     },
 
     getMessagesFromSocket() {
@@ -474,6 +551,7 @@ export default {
     },
 
     deleteConversation(partnerId) {
+      this.deleteLoader = true;
       axios
         .get(`${BASE_URL}/api/conversations/find/${this.userId}/${partnerId}`)
         .then((response) => {
@@ -498,7 +576,8 @@ export default {
                 // update userChatPartners after deleting from frontend
                 this.userChatPartners = updateChatPartnersAfterDelete;
                 this.currentConversationBoolean = false;
-                // console.log(res.data);
+                this.deleteConvoDialog = false;
+                this.deleteLoader = false;
                 this.snackBarText = res.data;
                 this.snackbar = true;
                 this.snackbarColor = true;
@@ -508,6 +587,8 @@ export default {
               let errorMsg = err.response.data;
               this.snackbar = true;
               this.snackBarText = `${errorMsg}`;
+              this.deleteConvoDialog = false;
+              this.deleteLoader = false;
             });
         })
         .catch((err) => console.log(err));
