@@ -167,7 +167,10 @@ export default {
         })
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
-            this.$router.push("/login");
+            this.snackbarColor = true;
+            this.snackBarText = `Register success`;
+            this.snackbar = true;
+            setTimeout(() => this.$router.push("/login"), 2000);
             this.registerLoader = false;
           }
         })
