@@ -6,6 +6,8 @@ import Register from "../views/Register.vue";
 import ProfilePage from "../views/ProfilePage.vue";
 import Messenger from "../views/Messenger.vue";
 import { isLoggedIn } from "../services/auth";
+import ForgotPassword from "../views/ForgotPassword.vue";
+import ResetPassword from "../views/ResetPassword.vue";
 
 Vue.use(VueRouter);
 
@@ -56,6 +58,22 @@ const routes = [
     component: Messenger,
     meta: {
       requiresAuth: true,
+    },
+  },
+  {
+    path: "/forgot_password",
+    name: "ForgotPassword",
+    component: ForgotPassword,
+    meta: {
+      requiresAuth: false,
+    },
+  },
+  {
+    path: "/reset_password/:token",
+    name: "ResetPassword",
+    component: ResetPassword,
+    meta: {
+      requiresAuth: false,
     },
   },
 ];

@@ -45,7 +45,8 @@
                         placeholder="Password"
                       ></v-text-field>
                       <v-card-text class="text-right pr-0">
-                        <span class="white primary--text reset"
+                        <span class="white primary--text reset cursor-pointer"
+                          @click="goToForgotPassword()"
                           >Forgot your PIN?</span
                         >
                       </v-card-text>
@@ -167,6 +168,7 @@ export default {
       this.$router.push("/register");
     },
     login() {
+      if (!this.$refs.loginForm.validate()) return
       this.loginLoader = true;
       axios
         .post(`${BASE_URL}/api/auth/login`, {
@@ -185,12 +187,12 @@ export default {
             localStorage.setItem("email", res.data.email);
             localStorage.setItem("username", res.data.username);
             localStorage.setItem("userId", res.data._id);
-            this.snackbarColor = true;
-            this.snackbar = true;
             this.loginLoader = false;
-
-            this.$router.push("/");
-            location.reload();
+            this.snackbarColor = true;
+            this.snackBarText = `Login success`;
+            this.snackbar = true;
+            setTimeout(() => this.$router.push("/"), 2000);
+            // location.reload();
           }
         })
         .catch((err) => {
@@ -199,6 +201,10 @@ export default {
           this.snackBarText = `${errorMsg}`;
           this.loginLoader = false;
         });
+    },
+
+    goToForgotPassword() {
+      this.$router.push("/forgot_password");
     },
   },
 };
