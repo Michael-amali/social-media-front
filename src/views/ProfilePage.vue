@@ -104,7 +104,9 @@
       <v-col xs="12" sm="8" md="7">
         <PostSectionProfile />
       </v-col>
+
       <v-col xs="12" sm="4" md="5">
+        <!-- LoggedIn user's info -->
         <div class="pa-2">
           <v-layout v-if="this.userId !== this.currentUserId">
             <v-flex class="">
@@ -173,6 +175,7 @@
             </v-flex>
           </v-layout>
 
+          <!-- LoggedIn users' friends -->
           <v-layout class="mt-5">
             <v-flex>
               <div class="title">User friends</div>
@@ -214,6 +217,7 @@
           </v-layout>
         </div>
 
+        <!-- LoggedIn users's optics -->
         <div class="pa-2">
           <v-layout class="mt-6">
             <div class="title text-capitalize">
@@ -268,6 +272,60 @@
             <v-flex>
               <div class="subtitle-2">Profession</div>
               <div class="subtitle-2 grey--text">Developer</div>
+            </v-flex>
+          </v-layout>
+        </div>
+
+        <!-- All users PAGINATED   -->
+        <div class="pa-2">
+          <v-layout class="mt-5">
+            <v-flex>
+              <div class="title">All Users</div>
+              <v-row class="p-2" v-if="this.paginatedUsers.length > 0">
+                <v-col
+                  cols="4"
+                  xs="12"
+                  sm="6"
+                  md="4"
+                  class=""
+                  v-for="user in this.paginatedUsers"
+                  :key="user._id"
+                >
+                  <v-card
+                    height="150"
+                    @click="goToFriendProfile(user.username, user._id)"
+                  >
+                    <v-img
+                      :src="
+                        !!user.profilePicture
+                          ? user.profilePicture
+                          : profileImage
+                      "
+                      alt=""
+                      height="160"
+                    ></v-img>
+                  </v-card>
+                  <div
+                    class="mt-2 font-weight-bold d-flex justify-center text-capitalize"
+                  >
+                    {{ !!user.username ? user.username : "unkwown" }}
+                  </div>
+                </v-col>
+                <v-col cols="12">
+                  <v-pagination
+                    v-model="page"
+                    :length="totalPages"
+                    circle
+                    total-visible="4"
+                    next-icon="mdi-menu-right"
+                    prev-icon="mdi-menu-left"
+                    @input="handlePageChange"
+                  ></v-pagination>
+                </v-col>
+              </v-row>
+              <v-row v-else>
+                <v-col> No Users </v-col>
+              </v-row>
             </v-flex>
           </v-layout>
         </div>
@@ -496,6 +554,11 @@ export default {
       snackBarText: "",
       snackbar: false,
       snackbarColor: null,
+
+      paginatedUsers: [],
+      page: 1,
+      limit: 3,
+      totalPages: 1,
     };
   },
   methods: {
@@ -871,12 +934,36 @@ export default {
     startConversation() {
       this.createConversation();
     },
+
+    getPaginatedUsers() {
+      axios
+        .get(
+          `${BASE_URL}/api/users/paginate?page=${this.page}&limit=${this.limit}`
+        )
+        .then((res) => {
+          if (res.status >= 200 && res.status < 400) {
+            this.paginatedUsers = [...res.data.paginatedData];
+
+            // totalPages is sort of the limit of the number of pages required to get all the users
+            this.totalPages = Math.ceil(res.data.numOfUsers / this.limit);
+            console.log(res.data, "paginate");
+          }
+        })
+        .catch((err) => console.log(err));
+    },
+
+    // This function is triggered whenever a pagination button is clicked
+    handlePageChange(value) {
+      this.page = value;
+      this.getPaginatedUsers();
+    },
   },
 
   mounted() {
     this.getSingleUser();
     this.getFriends();
     this.getAllPosts();
+    this.getPaginatedUsers();
   },
 };
 </script>
