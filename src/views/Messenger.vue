@@ -91,6 +91,7 @@
                             v-model="deleteConvoDialog"
                             max-width="480"
                             :retain-focus="false"
+                            hide-overlay
                           >
                             <v-card>
                               <v-card-title>
