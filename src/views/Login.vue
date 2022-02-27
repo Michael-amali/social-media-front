@@ -47,7 +47,7 @@
                       <v-card-text class="text-right pr-0">
                         <span class="white primary--text reset cursor-pointer"
                           @click="goToForgotPassword()"
-                          >Forgot your PIN?</span
+                          >Forgot your password?</span
                         >
                       </v-card-text>
                       <v-btn
