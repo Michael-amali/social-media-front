@@ -191,8 +191,8 @@ export default {
             this.snackbarColor = true;
             this.snackBarText = `Login success`;
             this.snackbar = true;
-            setTimeout(() => this.$router.push("/"), 2000);
-            // location.reload();
+            this.$router.push("/");
+            location.reload();
           }
         })
         .catch((err) => {
