@@ -166,12 +166,15 @@ export default {
         this.mini = true;
       }
     },
+
     goToHome() {
       this.$router.push("/");
     },
+
     goToProfile() {
-      this.$router.push(`/profile/${this.username}/${this.userId}`);
-      // location.reload();
+      this.$router.push(
+        `/profile/${this.currentUserInStore.username}/${this.currentUserInStore._id}`
+      );
     },
 
     goToMessenger() {
@@ -209,6 +212,12 @@ export default {
     logOut() {
       logoutUser();
       localStorage.clear();
+      axios
+        .get(`${BASE_URL}/api/auth/logout`, { withCredentials: true })
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((err) => console.log(err));
       this.$router.push("/login");
     },
 
