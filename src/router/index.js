@@ -85,7 +85,7 @@ const router = new VueRouter({
   routes,
 });
 
-setTimeout(() => {
+// setTimeout(() => {
   router.beforeEach((to, from, next) => {
     if (to.meta.requiresAuth && !store.state.authToken) {
       next({
@@ -96,6 +96,6 @@ setTimeout(() => {
       next();
     }
   });
-}, 1000);
+// }, 1000);
 
 export default router;
