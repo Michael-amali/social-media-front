@@ -25,6 +25,11 @@ export function isCurrentUser() {
   return !!currentUser;
 }
 
+export function isUserIdConfigured() {
+  const userId = store.state.userId;
+  return !!userId;
+}
+
 // function getTokenExpirationDate(encodedToken) {
 //   const token = jwt_decode(encodedToken);
 //   if (!token.exp) {

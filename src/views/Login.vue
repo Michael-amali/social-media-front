@@ -20,7 +20,7 @@
                       <div class="d-flex justify-center mb-10">
                         <a
                           class="login-with-google-btn"
-                          href="http://localhost:4000/auth/google"
+                          href="https://social-media-myk.herokuapp.com/auth/google"
                           >Sign in with Google</a
                         >
                       </div>

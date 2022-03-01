@@ -5,9 +5,10 @@ import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import ProfilePage from "../views/ProfilePage.vue";
 import Messenger from "../views/Messenger.vue";
-import { isCurrentUser } from "../services/auth";
+// import {  getAuthToken } from "../services/auth";
 import ForgotPassword from "../views/ForgotPassword.vue";
 import ResetPassword from "../views/ResetPassword.vue";
+import store from "../store/index";
 
 Vue.use(VueRouter);
 
@@ -84,15 +85,17 @@ const router = new VueRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth && !isCurrentUser()) {
-    next({
-      name: "Login",
-      query: { redirect: to.fullPath },
-    });
-  } else {
-    next();
-  }
-});
+setTimeout(() => {
+  router.beforeEach((to, from, next) => {
+    if (to.meta.requiresAuth && !store.state.authToken) {
+      next({
+        name: "Login",
+        query: { redirect: to.fullPath },
+      });
+    } else {
+      next();
+    }
+  });
+}, 1000);
 
 export default router;

@@ -10,6 +10,7 @@
 <script>
 import axios from "axios";
 import { setAuthToken, setUserId } from "./services/auth";
+import { BASE_URL } from "../env";
 
 export default {
   name: "App",
@@ -21,7 +22,7 @@ export default {
   methods: {
     googleSignIn() {
       axios
-        .get("http://localhost:4000/login/success", { withCredentials: true })
+        .get(`${BASE_URL}/login/success`, { withCredentials: true })
         .then((res) => {
           console.log(res.data);
           setAuthToken(res.data.accessToken);
@@ -38,8 +39,25 @@ export default {
     },
   },
 
-  mounted() {
+  // created() {
+  //   this.$watch(
+  //     () => this.$route.params,
+  //     () => {
+  //       this.googleSignIn();
+  //     },
+  //     { immediate: true }
+  //   );
+  // },
+
+  created() {
     this.googleSignIn();
   },
+  watch: {
+    $route: "googleSignIn",
+  },
+
+  // beforeRouteEnter(to, from, next) {
+  //   next((vm) => vm.googleSignIn());
+  // },
 };
 </script>
