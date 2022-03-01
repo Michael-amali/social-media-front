@@ -20,6 +20,11 @@ export function isLoggedIn() {
   return !!authToken;
 }
 
+export function isCurrentUser() {
+  const currentUser = store.state.currentUser;
+  return !!currentUser;
+}
+
 // function getTokenExpirationDate(encodedToken) {
 //   const token = jwt_decode(encodedToken);
 //   if (!token.exp) {

@@ -5,7 +5,7 @@ import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import ProfilePage from "../views/ProfilePage.vue";
 import Messenger from "../views/Messenger.vue";
-import { isLoggedIn } from "../services/auth";
+import { isCurrentUser } from "../services/auth";
 import ForgotPassword from "../views/ForgotPassword.vue";
 import ResetPassword from "../views/ResetPassword.vue";
 
@@ -85,7 +85,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth && !isLoggedIn()) {
+  if (to.meta.requiresAuth && !isCurrentUser()) {
     next({
       name: "Login",
       query: { redirect: to.fullPath },
