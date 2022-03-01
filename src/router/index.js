@@ -5,7 +5,7 @@ import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import ProfilePage from "../views/ProfilePage.vue";
 import Messenger from "../views/Messenger.vue";
-// import {  getAuthToken } from "../services/auth";
+// import {  getAuthToken, isCurrentUser } from "../services/auth";
 import ForgotPassword from "../views/ForgotPassword.vue";
 import ResetPassword from "../views/ResetPassword.vue";
 import store from "../store/index";
