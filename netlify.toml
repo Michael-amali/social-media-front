@@ -5,6 +5,6 @@ status = 200
 
 [[headers]]
   # Define which paths this specific [[headers]] block will cover.
-  for = "https://social-media-myk.herokuapp.com"
+  for = "/"
     [headers.values]
-    Access-Control-Allow-Origin = "https://social-media-myk.herokuapp.com"
+    Access-Control-Allow-Origin = ""
