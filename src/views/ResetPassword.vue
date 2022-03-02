@@ -1,58 +1,56 @@
 <template>
-  <div>
-    <v-container fill-height>
-      <v-row>
-        <v-col>
-          <v-card flat outlined max-width="500" class="mx-auto">
-            <v-form ref="form" v-model="formValid" lazy-validation>
-              <v-card-text>
-                <v-container>
-                  <v-card-text class="text-center pa-0 text-h6 mb-6">
-                    New Password
-                  </v-card-text>
-                  <div>
-                    <v-text-field
-                      label="New Password"
-                      name="password"
-                      :rules="passwordRules"
-                      v-model="password"
-                      :append-icon="passwordShow ? 'mdi-eye' : 'mdi-eye-off'"
-                      @click:append="passwordShow = !passwordShow"
-                      :type="passwordShow ? 'text' : 'password'"
-                      color="primary"
-                      outlined
-                      required
-                      placeholder="New Password"
-                    ></v-text-field>
+  <v-container fill-height>
+    <v-row>
+      <v-col>
+        <v-card flat outlined max-width="500" class="mx-auto">
+          <v-form ref="form" v-model="formValid" lazy-validation>
+            <v-card-text>
+              <v-container>
+                <v-card-text class="text-center pa-0 text-h6 mb-6">
+                  New Password
+                </v-card-text>
+                <div>
+                  <v-text-field
+                    label="New Password"
+                    name="password"
+                    :rules="passwordRules"
+                    v-model="password"
+                    :append-icon="passwordShow ? 'mdi-eye' : 'mdi-eye-off'"
+                    @click:append="passwordShow = !passwordShow"
+                    :type="passwordShow ? 'text' : 'password'"
+                    color="primary"
+                    outlined
+                    required
+                    placeholder="New Password"
+                  ></v-text-field>
 
-                    <v-btn
-                      color="primary darken-1"
-                      block
-                      :loading="loader"
-                      :disabled="!formValid"
-                      class="text-capitalize"
-                      @click="sendNewPassword()"
-                    >
-                      Submit
-                    </v-btn>
-                    <v-col class="mt-3">
-                      <div class="mx-auto">
-                        <span>Return to</span
-                        ><span
-                          @click="goToLogin()"
-                          class="ml-2 white primary--text cursor-pointer"
-                          >Login &nbsp;</span
-                        >page
-                      </div>
-                    </v-col>
-                  </div>
-                </v-container>
-              </v-card-text>
-            </v-form>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+                  <v-btn
+                    color="primary darken-1"
+                    block
+                    :loading="loader"
+                    :disabled="!formValid"
+                    class="text-capitalize"
+                    @click="sendNewPassword()"
+                  >
+                    Submit
+                  </v-btn>
+                  <v-col class="mt-7 px-0">
+                    <div class="d-flex justify-center">
+                      <span>Return to</span
+                      ><span
+                        @click="goToLogin()"
+                        class="ml-2 white primary--text cursor-pointer"
+                        >Login &nbsp;</span
+                      >page
+                    </div>
+                  </v-col>
+                </div>
+              </v-container>
+            </v-card-text>
+          </v-form>
+        </v-card>
+      </v-col>
+    </v-row>
     <v-snackbar
       v-model="snackbar"
       timeout="4000"
@@ -76,7 +74,7 @@
         </v-btn>
       </template>
     </v-snackbar>
-  </div>
+  </v-container>
 </template>
 
 <script>
