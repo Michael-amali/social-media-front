@@ -1,89 +1,73 @@
 <template>
-  <v-container fill-height>
+  <v-container fill-height class="backgroudImage" fluid>
     <v-row>
       <v-col>
-        <v-card flat outlined>
-          <v-row>
-            <v-col class="hidden-sm-and-down"
-              ><v-img :src="loginImage" height="600"></v-img
-            ></v-col>
-            <v-col class="" align-self="center">
-              <v-card-text>
-                <v-form
-                  ref="loginForm"
-                  v-model="loginFormValid"
-                  lazy-validation
+        <v-card flat outlined max-width="600" class="mx-auto">
+          <v-form ref="loginForm" v-model="loginFormValid" lazy-validation>
+            <v-card-text>
+              <v-container>
+                <div class="d-flex justify-center mb-10">
+                  <a
+                    class="login-with-google-btn"
+                    href="https://social-media-myk.herokuapp.com/auth/google"
+                    >Sign in with Google</a
+                  >
+                </div>
+
+                <v-card-text class="text-center pa-0 text-h6 mb-6">
+                  Login with your credentials
+                </v-card-text>
+                <v-text-field
+                  label="E-mail Address"
+                  name="email"
+                  :rules="loginEmailRules"
+                  v-model="loginEmail"
+                  type="email"
+                  color="primary"
+                  required
+                  placeholder="Email"
+                ></v-text-field>
+
+                <v-text-field
+                  label="Password"
+                  name="password"
+                  :rules="loginPasswordRules"
+                  v-model="loginPassword"
+                  :append-icon="loginPasswordShow ? 'mdi-eye' : 'mdi-eye-off'"
+                  @click:append="loginPasswordShow = !loginPasswordShow"
+                  :type="loginPasswordShow ? 'text' : 'password'"
+                  color="primary"
+                  required
+                  placeholder="Password"
+                ></v-text-field>
+                <v-card-text class="text-right pr-0">
+                  <span
+                    class="white primary--text reset cursor-pointer"
+                    @click="goToForgotPassword()"
+                    >Forgot your password?</span
+                  >
+                </v-card-text>
+                <v-btn
+                  color="primary darken-1"
+                  block
+                  :loading="loginLoader"
+                  :disabled="!loginFormValid"
+                  @click="login"
                 >
-                  <v-card-text>
-                    <v-container>
+                  LOGIN
+                </v-btn>
 
-                      <div class="d-flex justify-center mb-10">
-                        <a
-                          class="login-with-google-btn"
-                          href="https://social-media-myk.herokuapp.com/auth/google"
-                          >Sign in with Google</a
-                        >
-                      </div>
-
-                      <v-card-text class="text-center pa-0 text-h6 mb-6">
-                        Login with your credentials
-                      </v-card-text>
-                      <v-text-field
-                        label="E-mail Address"
-                        name="email"
-                        :rules="loginEmailRules"
-                        v-model="loginEmail"
-                        type="email"
-                        color="primary"
-                        required
-                        placeholder="Email"
-                      ></v-text-field>
-
-                      <v-text-field
-                        label="Password"
-                        name="password"
-                        :rules="loginPasswordRules"
-                        v-model="loginPassword"
-                        :append-icon="
-                          loginPasswordShow ? 'mdi-eye' : 'mdi-eye-off'
-                        "
-                        @click:append="loginPasswordShow = !loginPasswordShow"
-                        :type="loginPasswordShow ? 'text' : 'password'"
-                        color="primary"
-                        required
-                        placeholder="Password"
-                      ></v-text-field>
-                      <v-card-text class="text-right pr-0">
-                        <span
-                          class="white primary--text reset cursor-pointer"
-                          @click="goToForgotPassword()"
-                          >Forgot your password?</span
-                        >
-                      </v-card-text>
-                      <v-btn
-                        color="primary darken-1"
-                        block
-                        :loading="loginLoader"
-                        :disabled="!loginFormValid"
-                        @click="login"
-                      >
-                        LOGIN
-                      </v-btn>
-
-                      <v-col class="mt-3">
-                        <span>Not registered yet?</span
-                        ><span
-                          @click="goToRegister()"
-                          class="ml-2 white primary--text cursor-pointer"
-                          >Register here</span
-                        >
-                      </v-col>
-                    </v-container>
-                  </v-card-text>
-                </v-form>
-              </v-card-text>
-            </v-col>
-          </v-row>
+                <v-col class="mt-3">
+                  <span>Not registered yet?</span
+                  ><span
+                    @click="goToRegister()"
+                    class="ml-2 white primary--text cursor-pointer"
+                    >Register here</span
+                  >
+                </v-col>
+              </v-container>
+            </v-card-text>
+          </v-form>
         </v-card>
       </v-col>
     </v-row>
@@ -249,5 +233,9 @@ export default {
   background-position: 12px 11px;
 
   text-decoration: none;
+}
+
+.v-application .backgroudImage {
+  background: url("../assets/loginPage.jpg") center !important;
 }
 </style>

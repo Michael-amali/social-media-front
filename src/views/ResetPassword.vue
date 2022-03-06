@@ -1,5 +1,5 @@
 <template>
-  <v-container fill-height>
+  <v-container fill-height class="backgroudImage" fluid>
     <v-row>
       <v-col>
         <v-card flat outlined max-width="500" class="mx-auto">
@@ -139,5 +139,9 @@ export default {
 <style scoped>
 .cursor-pointer:hover {
   cursor: pointer;
+}
+
+.v-application .backgroudImage {
+  background: url("../assets/resetPassword.jpg") center !important;
 }
 </style>
