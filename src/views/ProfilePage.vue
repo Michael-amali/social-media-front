@@ -6,7 +6,9 @@
         <v-img
           class="main-img"
           :src="
-            !!singleUser.coverPicture ? singleUser.coverPicture : coverImage
+            singleUser && !!singleUser.coverPicture
+              ? singleUser.coverPicture
+              : coverImage
           "
           height="240"
         ></v-img>
@@ -54,7 +56,7 @@
                   :loading="isSelecting"
                   class="cursor-pointer"
                   :src="
-                    !!singleUser.profilePicture
+                    singleUser && !!singleUser.profilePicture
                       ? singleUser.profilePicture
                       : profileImage
                   "
@@ -82,7 +84,7 @@
             <v-avatar size="170">
               <v-img
                 :src="
-                  !!singleUser.profilePicture
+                  singleUser && !!singleUser.profilePicture
                     ? singleUser.profilePicture
                     : profileImage
                 "
@@ -92,10 +94,10 @@
         </div>
 
         <div class="d-flex justify-center mt-4 title text-capitalize">
-          {{ !!singleUser.username ? singleUser.username : "Unknown" }}
+          {{ singleUser && !!singleUser.username ? singleUser.username : "Unknown" }}
         </div>
         <div class="d-flex justify-center">
-          {{ !!singleUser.desc ? singleUser.desc : "Unknown" }}
+          {{ singleUser && !!singleUser.desc ? singleUser.desc : "Unknown" }}
         </div>
       </div>
     </div>
@@ -112,7 +114,7 @@
             <v-flex class="">
               <div
                 v-if="
-                  !!this.singleUser.followers
+                  singleUser && !!this.singleUser.followers
                     ? this.singleUser.followers.includes(this.userId)
                     : ''
                 "
@@ -155,19 +157,19 @@
               <div>
                 <span class="mr-4">City :</span
                 ><span class="subtitle-1 grey--text">
-                  {{ !!singleUser.city ? singleUser.city : "unknown" }}
+                  {{ singleUser && !!singleUser.city ? singleUser.city : "unknown" }}
                 </span>
               </div>
               <div>
                 <span class="mr-4">From :</span
                 ><span class="subtitle-1 grey--text">{{
-                  !!singleUser.from ? singleUser.from : "unknown"
+                  singleUser && !!singleUser.from ? singleUser.from : "unknown"
                 }}</span>
               </div>
               <div>
                 <span class="mr-4">Relationship :</span
                 ><span class="subtitle-1 grey--text">{{
-                  !!singleUser.relationship
+                  singleUser && !!singleUser.relationship
                     ? singleUser.relationship
                     : "unknown"
                 }}</span>
@@ -221,7 +223,7 @@
         <div class="pa-2">
           <v-layout class="mt-6">
             <div class="title text-capitalize">
-              {{ !!singleUser.username ? singleUser.username : "Unknown" }}
+              {{ singleUser && !!singleUser.username ? singleUser.username : "Unknown" }}
             </div>
           </v-layout>
           <v-layout>
@@ -237,7 +239,7 @@
               <v-layout>
                 <div class="subtitle-2">
                   {{
-                    !!singleUser.followings ? singleUser.followings.length : 0
+                    singleUser && !!singleUser.followings ? singleUser.followings.length : 0
                   }}
                 </div>
                 <div class="subtitle-2 ml-1 grey--text">Followers</div>
@@ -246,7 +248,7 @@
             <v-flex>
               <v-layout>
                 <div class="subtitle-2">
-                  {{ !!singleUser.followers ? singleUser.followers.length : 0 }}
+                  {{ singleUser && !!singleUser.followers ? singleUser.followers.length : 0 }}
                 </div>
                 <div class="subtitle-2 ml-1 grey--text">Followings</div>
               </v-layout>
