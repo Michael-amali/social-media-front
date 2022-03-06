@@ -85,17 +85,15 @@ const router = new VueRouter({
   routes,
 });
 
-// setTimeout(() => {
-  router.beforeEach((to, from, next) => {
-    if (to.meta.requiresAuth && !store.state.authToken) {
-      next({
-        name: "Login",
-        query: { redirect: to.fullPath },
-      });
-    } else {
-      next();
-    }
-  });
-// }, 1000);
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth && !store.state.authToken) {
+    next({
+      name: "Login",
+      query: { redirect: to.fullPath },
+    });
+  } else {
+    next();
+  }
+});
 
 export default router;

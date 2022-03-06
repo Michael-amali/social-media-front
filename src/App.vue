@@ -2,7 +2,8 @@
   <v-app>
     <v-main>
       <!-- v-bind key ensure there's reload of page-->
-      <router-view :key="$route.path" />
+      <router-view :key="$route.fullPath" />
+      <vue-progress-bar></vue-progress-bar>
     </v-main>
   </v-app>
 </template>

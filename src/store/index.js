@@ -26,9 +26,9 @@ export default new Vuex.Store({
     SET_USER_ID(state, data) {
       state.userId = data._id;
     },
-    // UPDATE_CURRENT_USER_IN_STATE(state, user) {
-    //   state.currentUser = user;
-    // },
+    UPDATE_CURRENT_USER_IN_STATE(state, data) {
+      state.currentUser = data;
+    },
     CLEAR_CURRENT_USER(state) {
       state.currentUser = null;
       state.authToken = null;
@@ -39,8 +39,8 @@ export default new Vuex.Store({
     // },
   },
   actions: {
-    setCurrentUserInState({ commit }, user) {
-      commit("SET_CURRENT_USER_IN_STATE", user);
+    setCurrentUserInState({ commit }, data) {
+      commit("SET_CURRENT_USER_IN_STATE", data);
     },
     setIsLoggedIn({ commit }, data) {
       commit("SET_IS_LOGGED_IN", data);
