@@ -8,6 +8,7 @@ import Messenger from "../views/Messenger.vue";
 // import {  getAuthToken, isCurrentUser } from "../services/auth";
 import ForgotPassword from "../views/ForgotPassword.vue";
 import ResetPassword from "../views/ResetPassword.vue";
+import Settings from "../views/Settings.vue";
 import store from "../store/index";
 
 Vue.use(VueRouter);
@@ -75,6 +76,14 @@ const routes = [
     component: ResetPassword,
     meta: {
       requiresAuth: false,
+    },
+  },
+  {
+    path: "/settings",
+    name: "Settings",
+    component: Settings,
+    meta: {
+      requiresAuth: true,
     },
   },
 ];

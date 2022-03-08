@@ -136,7 +136,7 @@ export default {
           link: `profile/${this.username}/${this.userId}`,
         },
         { title: "Logout", icon: "mdi-power", link: "/login" },
-        { title: "Settings", icon: "mdi-cog-outline" },
+        { title: "Settings", icon: "mdi-cog-outline", link: "/settings" },
         { title: "Notification", icon: "mdi-bell-outline" },
       ],
       mini: this.drawerShow(),
@@ -177,6 +177,10 @@ export default {
       );
     },
 
+    goToSettings() {
+      this.$router.push("/settings");
+    },
+
     goToMessenger() {
       this.$router.push("/messenger");
       location.reload();
@@ -203,7 +207,7 @@ export default {
         this.logOut();
         location.reload();
       } else if (item.title === "Settings") {
-        this.goToProfile();
+        this.goToSettings();
       } else if (item.title === "Notification") {
         this.goToProfile();
       }

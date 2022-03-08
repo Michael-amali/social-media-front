@@ -150,7 +150,10 @@
               <v-card-actions>
                 <div class="text-center">
                   <v-btn
-                    class="mx-3"
+                    :class="{
+                      'mx-1': $vuetify.breakpoint.smAndDown,
+                      'mx-3': $vuetify.breakpoint.mdAndUp,
+                    }"
                     fab
                     dark
                     x-small
@@ -162,6 +165,10 @@
                   </v-btn>
                   <v-btn
                     class="mr-3"
+                    :class="{
+                      'mr-1': $vuetify.breakpoint.smAndDown,
+                      'mr-3': $vuetify.breakpoint.mdAndUp,
+                    }"
                     fab
                     dark
                     x-small
@@ -225,7 +232,10 @@
               <v-card-actions>
                 <div class="text-center">
                   <v-btn
-                    class="mx-3"
+                    :class="{
+                      'mx-1': $vuetify.breakpoint.smAndDown,
+                      'mx-3': $vuetify.breakpoint.mdAndUp,
+                    }"
                     fab
                     dark
                     x-small
@@ -237,6 +247,10 @@
                   </v-btn>
                   <v-btn
                     class="mr-3"
+                    :class="{
+                      'mr-1': $vuetify.breakpoint.smAndDown,
+                      'mr-3': $vuetify.breakpoint.mdAndUp,
+                    }"
                     fab
                     dark
                     x-small

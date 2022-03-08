@@ -796,7 +796,6 @@ export default {
           this.snackbar = true;
           this.snackbarColor = true;
           location.reload();
-          console.log(res.data);
         })
         .catch((err) => {
           let errorMsg = err.response.data;
