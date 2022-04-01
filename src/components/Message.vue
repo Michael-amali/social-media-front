@@ -1,13 +1,15 @@
 <template>
   <div>
-    <div :class="this.own ? 'message own' : 'message'">
-      <div class="messageTop">
-        <img class="messageImg" :src="profileImage" alt="" />
-        <p class="messageText">
-          {{ message.text }}
-        </p>
+    <div v-if="message.text">
+      <div :class="this.own ? 'message own' : 'message'">
+        <div class="messageTop">
+          <img class="messageImg" :src="profileImage" alt="" />
+          <p class="messageText">
+            {{ message.text }}
+          </p>
+        </div>
+        <div class="messageBottom">{{ this.formattedTime }}</div>
       </div>
-      <div class="messageBottom">{{ this.formattedTime }}</div>
     </div>
   </div>
 </template>
@@ -30,9 +32,15 @@ export default {
     formatTime() {
       this.formattedTime = format(this.message.createdAt);
     },
+
+    scrollToLastMessage() {
+      let chatBoxTop = this.$refs.chatBoxId;
+      chatBoxTop?.scrollIntoView({ behavior: "smooth", block: "end" });
+    },
   },
   mounted() {
     this.formatTime();
+    // this.scrollToLastMessage();
   },
 };
 </script>
