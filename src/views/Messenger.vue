@@ -51,7 +51,16 @@
                 :key="idx"
               >
                 <v-col class="pa-0">
-                  <v-card class="ma-2 pa-1" outlined :elevation="hover ? 2 : 0">
+                  <v-card
+                    class="ma-2 pa-1"
+                    outlined
+                    :elevation="hover ? 2 : 0"
+                    :class="`${
+                      selectedChatId === chatPartner._id
+                        ? 'active-selected'
+                        : ''
+                    }`"
+                  >
                     <div class="py-3">
                       <v-row>
                         <v-col
@@ -149,17 +158,11 @@
                 </div>
               </v-col>
               <v-card outlined v-else>
-                <div class="chatBox" id="chatBoxId">
+                <div class="chatBox">
                   <div class="chatBoxWrapper">
-                    <div class="chatBoxTop" id="chatBoxTopId">
-                      <v-col
-                        v-for="(messageArray, idx) in this.messages"
-                        :key="idx"
-                      >
-                        <v-col
-                          v-for="(message, idc) in messageArray"
-                          :key="idc"
-                        >
+                    <div class="chatBoxTop" id="chatBoxTopId" ref="chatBoxRef">
+                      <v-col v-for="(message, idx) in messages" :key="idx">
+                        <v-col class="py-0">
                           <Message
                             :own="message.sender === userId ? true : false"
                             :message="message"
@@ -171,9 +174,10 @@
                       <textarea
                         class="chatMessageInput"
                         name=""
-                        v-model="userInputText"
                         outlined
+                        v-model="userInputText"
                         placeholder="Write something.."
+                        @keyup.enter="handleSubmit"
                       ></textarea>
                       <button class="chatSubmitButton" @click="handleSubmit">
                         Send
@@ -305,7 +309,7 @@ export default {
         "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
       currentConversationBoolean: false,
       currentConversation: null,
-      messages: [],
+
       userInputText: "",
       currentConversationId: "",
       socket: null,
@@ -317,7 +321,6 @@ export default {
         "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg",
       receiverId: "",
 
-      users: ["Afghanistan", "Albani"],
       usernameLimit: 60,
       entries: [],
       isLoading: false,
@@ -331,16 +334,28 @@ export default {
       confirmDelete: false,
       deleteConvoDialog: false,
       deleteLoader: false,
+
+      conversation: null,
+      messages: [],
+      selectedChatId: null,
     };
   },
 
   methods: {
+    scrollToBottom() {
+      let chatBoxTop = this.$refs.chatBoxRef;
+
+      this.$nextTick(() => {
+        chatBoxTop.scrollTop =
+          chatBoxTop.scrollHeight - chatBoxTop.clientHeight;
+      }, 0);
+    },
+
     getConversations() {
       axios
         .get(`${BASE_URL}/api/conversations/${this.userId}`)
         .then((res) => {
           this.conversations = [...res.data];
-          console.log(this.conversations, "---------convo");
 
           this.getUserChatFriends();
         })
@@ -371,22 +386,20 @@ export default {
     // Get conversation between LoggedIn user and chatPartner
     getConversation(partner_id) {
       this.currentConversationBoolean = true;
+      this.selectedChatId = partner_id;
 
       // then identify the member who is chatting with the current user
       this.receiverId = partner_id;
 
-      let userConversations = [];
       axios
-        .get(`${BASE_URL}/api/conversations/${partner_id}`)
+        .get(
+          `${BASE_URL}/api/conversations/find/${this.userId}/${this.receiverId}`
+        )
         .then((res) => {
-          userConversations = [...res.data];
-          console.log(res.data, "conversations", partner_id, "partnerId");
-
-          // the message is set to empty to prevent concatenating of messages from different conversations
+          this.conversation = res.data;
+          this.currentConversationBoolean = true;
           this.messages = [];
-          userConversations.forEach((conversation) => {
-            this.getMessages(conversation._id);
-          });
+          this.getMessages(this.conversation._id);
         })
         .catch((err) => console.log(err));
     },
@@ -394,60 +407,60 @@ export default {
     getMessages(conversationId) {
       this.currentConversationId = conversationId;
 
-      // Find the current conversation
-      this.currentConversation = this.conversations.find(
-        (conversation) => conversation._id === this.currentConversationId
-      );
-      console.log(this.currentConversation, "current-conversations");
-
       axios
         .get(`${BASE_URL}/api/messages/${conversationId}`)
         .then((res) => {
-          this.messages.push(res.data);
-          this.scrollToLastMessage();
+          let messagesArray = res.data;
+
+          // Ignore pushing messages with an id that already exists. Every new msg will have it's own id even if the same text msg
+          if (messagesArray.length > 0) {
+            messagesArray.forEach((msg) => {
+              let foundIndex = this.messages.findIndex((msgObj) => {
+                return msgObj._id === msg._id;
+              });
+              if (foundIndex === -1) {
+                this.messages.push(msg);
+              }
+            });
+          } else {
+            this.messages.push(res.data);
+          }
         })
         .catch((err) => console.log(err));
     },
 
     handleSubmit() {
+      if (this.userInputText.trim() === "") return;
+
       const messageData = {
         sender: this.userId,
-        text: this.userInputText,
+        text: this.userInputText.trim(),
         conversationId: this.currentConversationId,
       };
-
-      this.socket.emit("sendMessage", {
-        senderId: this.userId,
-        receiverId: this.receiverId,
-        text: this.userInputText,
-      });
 
       axios
         .post(`${BASE_URL}/api/messages/`, messageData)
         .then((res) => {
-          // updating the messages array
-          this.messages = [...this.messages, res.data];
-
-          // Sort of only reloading the chat section after user types (NOT EFFICIENT)
-          this.messages = [];
-          this.getMessages(this.currentConversationId);
+          this.messages.push(res.data);
           this.userInputText = "";
+
+          this.$nextTick(() => {
+            this.$refs.chatBoxRef.scrollTop =
+              this.$refs.chatBoxRef.scrollHeight;
+          });
         })
         .catch((err) => console.log(err));
-    },
 
-    scrollToLastMessage() {
-      const chatBoxTop = document.getElementById("chatBoxId");
-      console.log(chatBoxTop.scrollTop, "top");
-      console.log(chatBoxTop.scrollHeight, "height");
-      chatBoxTop.scrollTop += chatBoxTop.scrollHeight;
-      chatBoxTop.scrollIntoView(true);
-      console.log(chatBoxTop.scrollTop, "height after");
+      this.socket.emit("sendMessage", {
+        senderId: this.userId,
+        receiverId: this.receiverId,
+        text: this.userInputText.trim(),
+      });
     },
 
     setSocket() {
-      // this.socket = io("ws://localhost:8900");
-      this.socket = io("https://social-media-socketio.herokuapp.com/");
+      this.socket = io("ws://localhost:8900");
+      // this.socket = io("https://social-media-socketio.herokuapp.com/");
     },
 
     getMessagesFromSocket() {
@@ -458,24 +471,24 @@ export default {
           createdAt: Date.now(),
         };
       });
-      console.log(this.arrivalMessage, "arrivalMessage");
     },
 
     sendMessageToServer() {
       this.socket.emit("addUser", this.userId);
+
       this.socket.on("getUsers", (users) => {
         this.onlineUsers = [...users];
-        console.log(users, "users-----");
+        console.log(users, "online users-----");
+        this.setOnlineFriends();
       });
     },
 
-    // Haven't used it yet ..... PROBABILY the bug killing me
-    addingArrivalMessage() {
+    addArrivalMessage() {
       if (
         this.arrivalMessage &&
-        this.currentConversation?.members.includes(this.arrivalMessage.sender)
+        this.conversation?.members.includes(this.arrivalMessage?.sender)
       ) {
-        this.messages = [...this.messages, this.arrivalMessage];
+        this.messages.push(this.arrivalMessage);
       }
     },
 
@@ -498,20 +511,50 @@ export default {
       this.onlineUsers.forEach((onlineUser) => {
         onlineUsersId.push(onlineUser.userId);
       });
+
       this.onlineFriends = this.friendsList.filter((friend) => {
         return onlineUsersId.includes(friend._id);
       });
     },
 
     handleOnlineClick(person) {
+      console.log(person, 'person');
       axios
         .get(`${BASE_URL}/api/conversations/find/${this.userId}/${person._id}`)
         .then((res) => {
-          let conversation = res.data;
+          if (res.data) {
+            this.conversation = res.data;
+            this.currentConversationBoolean = true;
+            this.messages = [];
+            this.getMessages(this.conversation?._id);
+          } else {
+            this.createConvo(this.userId, person._id);
+          }
 
+          // Check before pushing into userChatPartners array to avoid duplicates
+          let found = this.userChatPartners.find((partner) => {
+            return person._id === partner._id;
+          });
+          if (!found) {
+            this.userChatPartners.push(person);
+          }
+
+          this.selectedChatId = person._id;
+        })
+        .catch((err) => console.log(err));
+    },
+
+    createConvo(senderId, receiverId) {
+      axios
+        .post(`${BASE_URL}/api/conversations/`, {
+          senderId: senderId,
+          receiverId: receiverId,
+        })
+        .then((res) => {
+          this.conversation = res.data;
           this.currentConversationBoolean = true;
           this.messages = [];
-          this.getMessages(conversation._id);
+          this.getMessages(this.conversation?._id);
         })
         .catch((err) => console.log(err));
     },
@@ -524,7 +567,7 @@ export default {
           receiverId: this.fields[0].value,
         })
         .then((res) => {
-          this.currentConversation = res.data;
+          this.conversation = res.data;
           // Getting conversation and getMessages function retyped
           this.currentConversationBoolean = true;
 
@@ -543,6 +586,20 @@ export default {
               });
             })
             .catch((err) => console.log(err));
+
+          // Check before pushing into userChatPartners array to avoid duplicates
+          let found = this.userChatPartners.find((partner) => {
+            return this.fields[0]?.value === partner._id;
+          });
+          if (!found) {
+            this.userChatPartners.push({
+              _id: this.fields[0]?.value,
+              username: this.fields[1]?.value,
+              profilePicture: this.fields[4]?.value,
+            });
+          }
+
+          this.selectedChatId = this.fields[0].value;
         })
         .catch((err) => console.log(err));
     },
@@ -659,8 +716,31 @@ export default {
     this.$watch(
       "fields",
       function () {
-        console.log("a thing changed");
         this.startConversation();
+      },
+      { deep: true }
+    );
+
+    this.$watch(
+      "arrivalMessage",
+      function () {
+        this.addArrivalMessage();
+      },
+      { deep: true }
+    );
+
+    this.$watch(
+      "messages",
+      function () {
+        this.scrollToBottom();
+      },
+      { deep: true }
+    );
+
+    this.$watch(
+      "userId",
+      function () {
+        this.getMessagesFromSocket();
       },
       { deep: true }
     );
@@ -679,9 +759,11 @@ export default {
 }
 /* height should change with respective to screen size */
 .chatBoxTop {
-  height: 70vh;
+  /* height: 70vh; */
   overflow-y: scroll;
   padding-right: 10px;
+  height: calc(100vh - 30vh);
+  /* scroll-behavior: smooth; */
 }
 .chatBoxBottom {
   margin-top: 5px;
@@ -710,5 +792,9 @@ export default {
 
 .cursor-pointer:hover {
   cursor: pointer;
+}
+
+.active-selected {
+  border: 1px solid tomato !important;
 }
 </style>
