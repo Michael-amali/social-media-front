@@ -6,8 +6,19 @@
         @click="mini = !mini"
         v-show="$vuetify.breakpoint.smAndDown"
       ></v-app-bar-nav-icon>
+      <v-img
+        alt="Vuetify Logo"
+        class="shrink mr-2"
+        contain
+        src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
+        transition="scale-transition"
+        width="30"
+      />
 
-      <v-toolbar-title @click="goToHome" class="cursor-pointer"
+      <v-toolbar-title
+        @click="goToHome"
+        class="cursor-pointer"
+        v-show="$vuetify.breakpoint.mdAndUp"
         >Legends</v-toolbar-title
       >
       <v-spacer></v-spacer>
@@ -33,6 +44,8 @@
             outlined
             dense
             prepend-inner-icon="mdi-magnify"
+            clearable
+            clear-icon="mdi-close-circle-outline"
           ></v-autocomplete>
         </v-col>
       </v-row>

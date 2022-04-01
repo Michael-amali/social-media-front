@@ -51,14 +51,7 @@ export default {
   // },
 
   created() {
-    this.googleSignIn();
+    // this.googleSignIn();
   },
-  watch: {
-    $route: "googleSignIn",
-  },
-
-  // beforeRouteEnter(to, from, next) {
-  //   next((vm) => vm.googleSignIn());
-  // },
 };
 </script>
