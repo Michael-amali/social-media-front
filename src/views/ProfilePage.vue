@@ -94,7 +94,11 @@
         </div>
 
         <div class="d-flex justify-center mt-4 title text-capitalize">
-          {{ singleUser && !!singleUser.username ? singleUser.username : "Unknown" }}
+          {{
+            singleUser && !!singleUser.username
+              ? singleUser.username
+              : "Unknown"
+          }}
         </div>
         <div class="d-flex justify-center">
           {{ singleUser && !!singleUser.desc ? singleUser.desc : "Unknown" }}
@@ -157,7 +161,11 @@
               <div>
                 <span class="mr-4">City :</span
                 ><span class="subtitle-1 grey--text">
-                  {{ singleUser && !!singleUser.city ? singleUser.city : "unknown" }}
+                  {{
+                    singleUser && !!singleUser.city
+                      ? singleUser.city
+                      : "unknown"
+                  }}
                 </span>
               </div>
               <div>
@@ -223,7 +231,11 @@
         <div class="pa-2">
           <v-layout class="mt-6">
             <div class="title text-capitalize">
-              {{ singleUser && !!singleUser.username ? singleUser.username : "Unknown" }}
+              {{
+                singleUser && !!singleUser.username
+                  ? singleUser.username
+                  : "Unknown"
+              }}
             </div>
           </v-layout>
           <v-layout>
@@ -239,7 +251,9 @@
               <v-layout>
                 <div class="subtitle-2">
                   {{
-                    singleUser && !!singleUser.followings ? singleUser.followings.length : 0
+                    singleUser && !!singleUser.followings
+                      ? singleUser.followings.length
+                      : 0
                   }}
                 </div>
                 <div class="subtitle-2 ml-1 grey--text">Followers</div>
@@ -248,7 +262,11 @@
             <v-flex>
               <v-layout>
                 <div class="subtitle-2">
-                  {{ singleUser && !!singleUser.followers ? singleUser.followers.length : 0 }}
+                  {{
+                    singleUser && !!singleUser.followers
+                      ? singleUser.followers.length
+                      : 0
+                  }}
                 </div>
                 <div class="subtitle-2 ml-1 grey--text">Followings</div>
               </v-layout>
