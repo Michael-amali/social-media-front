@@ -459,8 +459,8 @@ export default {
     },
 
     setSocket() {
-      this.socket = io("ws://localhost:8900");
-      // this.socket = io("https://social-media-socketio.herokuapp.com/");
+      // this.socket = io("ws://localhost:8900");
+      this.socket = io("https://social-media-socketio.herokuapp.com/");
     },
 
     getMessagesFromSocket() {
