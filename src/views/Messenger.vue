@@ -740,8 +740,15 @@ export default {
     this.$watch(
       "userId",
       function () {
-        this.sendMessageToServer();
         this.getMessagesFromSocket();
+      },
+      { deep: true }
+    );
+
+    this.$watch(
+      "socket",
+      function () {
+        this.sendMessageToServer();
       },
       { deep: true }
     );
