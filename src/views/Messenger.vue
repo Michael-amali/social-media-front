@@ -1,6 +1,10 @@
 <template>
   <div>
-    <Navbar />
+    <Navbar
+      :socket="socket"
+      ref="NavbarComponent"
+      :notifications="notifications"
+    />
     <v-container fluid>
       <v-row>
         <!-- FRIENDS SECTION -->
@@ -303,6 +307,7 @@ export default {
       searchTerm: "",
       own: true,
       userId: localStorage.getItem("userId"),
+      username: localStorage.getItem("username"),
       conversations: [],
       userChatPartners: [],
       profileImage:
@@ -338,6 +343,8 @@ export default {
       conversation: null,
       messages: [],
       selectedChatId: null,
+
+      notifications: [],
     };
   },
 
@@ -400,6 +407,9 @@ export default {
           this.currentConversationBoolean = true;
           this.messages = [];
           this.getMessages(this.conversation._id);
+
+          this.clearNotification(this.receiverId);
+          this.deleteNotificationFromDB(this.conversation._id);
         })
         .catch((err) => console.log(err));
     },
@@ -432,6 +442,32 @@ export default {
     handleSubmit() {
       if (this.userInputText.trim() === "") return;
 
+      // MESSAGE
+      this.createMessage();
+
+      this.socket.emit("sendMessage", {
+        senderId: this.userId,
+        receiverId: this.receiverId,
+        text: this.userInputText.trim(),
+      });
+
+      // NOTIFICATION
+      this.createNotification();
+
+      this.socket.emit("sendNotification", {
+        conversationId: this.currentConversationId,
+        senderId: this.userId,
+        senderName: this.username,
+        receiverId: this.receiverId,
+      });
+    },
+
+    setSocket() {
+      this.socket = io("ws://localhost:8900");
+      // this.socket = io("https://social-media-socketio.herokuapp.com/");
+    },
+
+    createMessage() {
       const messageData = {
         sender: this.userId,
         text: this.userInputText.trim(),
@@ -450,17 +486,6 @@ export default {
           });
         })
         .catch((err) => console.log(err));
-
-      this.socket.emit("sendMessage", {
-        senderId: this.userId,
-        receiverId: this.receiverId,
-        text: this.userInputText.trim(),
-      });
-    },
-
-    setSocket() {
-      // this.socket = io("ws://localhost:8900");
-      this.socket = io("https://social-media-socketio.herokuapp.com/");
     },
 
     getMessagesFromSocket() {
@@ -518,7 +543,6 @@ export default {
     },
 
     handleOnlineClick(person) {
-      console.log(person, 'person');
       axios
         .get(`${BASE_URL}/api/conversations/find/${this.userId}/${person._id}`)
         .then((res) => {
@@ -651,6 +675,63 @@ export default {
         })
         .catch((err) => console.log(err));
     },
+
+    clearNotifications() {
+      this.$refs.NavbarComponent.resetNotifications();
+    },
+
+    clearNotification(id) {
+      this.$refs.NavbarComponent.clearOneNotification(id);
+    },
+
+    createNotification() {
+      axios
+        .post(`${BASE_URL}/api/notifications/`, {
+          conversationId: this.currentConversationId,
+          senderId: this.userId,
+          senderName: this.username,
+          receiverId: this.receiverId,
+        })
+        .then((res) => {
+          let found = this.notifications.find((n) => {
+            return n.senderId === res.data.senderId;
+          });
+          if (!found) {
+            this.notifications.push(res.data);
+          }
+        })
+        .catch((err) => console.log(err));
+    },
+
+    getNotificationsFromDB() {
+      axios
+        .get(`${BASE_URL}/api/notifications/${this.userId}`)
+        .then((res) => {
+          this.notifications.push(res.data);
+        })
+        .catch((err) => console.log(err));
+    },
+
+    deleteNotificationFromDB(conversationId) {
+      axios
+        .delete(
+          `${BASE_URL}/api/notifications/${conversationId}/${this.userId}`
+        )
+        .then((res) => {
+          // Removing from frontend after deleting from backend
+          let found = this.notifications[0].find((n) => {
+            return n.conversationId === conversationId;
+          });
+          if (found && found.receiverId === this.userId) {
+            let foundIndex = this.notifications[0].findIndex((n) => {
+              return n.conversationId === conversationId;
+            });
+            this.notifications[0].splice(foundIndex, 1);
+          }
+          console.log(res.data);
+        })
+        .catch((err) => console.log(err));
+    },
   },
 
   computed: {
@@ -712,6 +793,8 @@ export default {
     this.getFriends();
     // this.setOnlineFriends();
 
+    this.getNotificationsFromDB();
+
     // When there's a change in this.fields, it calls the startConversation() function
     this.$watch(
       "fields",
@@ -745,10 +828,13 @@ export default {
       { deep: true }
     );
 
+    // Clears notification if the chat is already active
     this.$watch(
-      "socket",
+      "notifications",
       function () {
-        this.sendMessageToServer();
+        if (this.currentConversationBoolean) {
+          this.deleteNotificationFromDB(this.currentConversationId);
+        }
       },
       { deep: true }
     );
