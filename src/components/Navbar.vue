@@ -51,12 +51,52 @@
       </v-row>
       <v-spacer></v-spacer>
 
-      <v-btn icon class="mr-2 hidden-sm-and-down" @click="goToMessenger()">
+      <v-btn icon class="hidden-sm-and-down" @click="goToMessenger()">
         <v-icon>mdi-email-outline</v-icon>
       </v-btn>
-      <v-btn icon class="mr-5 hidden-sm-and-down">
-        <v-icon>mdi-heart-outline</v-icon>
-      </v-btn>
+      <v-menu left bottom offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn icon v-bind="attrs" v-on="on" class="mr-4">
+            <v-badge
+              right
+              color="red"
+              class="hidden-sm-and-down"
+              offset-x="15"
+              offset-y="10"
+            >
+              <span slot="badge">{{
+                updatedNotifications &&
+                updatedNotifications[0] &&
+                updatedNotifications[0].length
+              }}</span>
+              <v-icon>mdi-bell-outline</v-icon>
+            </v-badge>
+          </v-btn>
+        </template>
+        <v-list
+          v-if="
+            updatedNotifications &&
+            updatedNotifications[0] &&
+            updatedNotifications[0].length > 0
+          "
+        >
+          <v-list-item v-for="(n, idx) in updatedNotifications[0]" :key="idx">
+            <v-list-item-title>
+              {{ n.senderName }} sent a message</v-list-item-title
+            >
+          </v-list-item>
+          <v-list-item class="d-flex justify-center">
+            <v-btn color="primary darken-1" @click="resetNotifications"
+              >Mark as read</v-btn
+            >
+          </v-list-item>
+        </v-list>
+        <v-list v-else>
+          <v-list-item>
+            <v-list-item-title>No new messages</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
 
       <v-menu left bottom offset-y>
         <template v-slot:activator="{ on, attrs }">
@@ -136,6 +176,7 @@ import { BASE_URL } from "../../env.js";
 export default {
   name: "Navbar",
   components: {},
+  props: ["socket", "notifications"],
 
   data() {
     return {
@@ -167,6 +208,8 @@ export default {
       isLoading: false,
       model: null,
       search: null,
+
+      updatedNotifications: this.notifications,
     };
   },
   methods: {
@@ -257,6 +300,38 @@ export default {
       );
       // this.$router.go()
     },
+
+    getNotificationFromSocket() {
+      this.socket.on("getNotification", (data) => {
+        // check if notification exits, if not push
+        let found = this.updatedNotifications[0].find((n) => {
+          return n.senderId === data.senderId;
+        });
+        if (!found) {
+          this.updatedNotifications[0].push(data);
+        }
+      });
+    },
+
+    resetNotifications() {
+      axios
+        .delete(`${BASE_URL}/api/notifications/${this.userId}`)
+        .then((res) => {
+          // Clearing all notifications from frontend
+          this.updatedNotifications[0].filter((n) => n.receiverId === this.userId)
+            .forEach((n) =>
+              this.updatedNotifications[0].splice(this.updatedNotifications[0].indexOf(n), 1)
+            );
+          console.log(res.data);
+        })
+        .catch((err) => console.log(err));
+    },
+
+    clearOneNotification(senderId) {
+      this.updatedNotifications = this.updatedNotifications.filter((n) => {
+        return n.senderId !== senderId;
+      });
+    },
   },
 
   computed: {
@@ -322,6 +397,22 @@ export default {
       function () {
         console.log("a thing changed");
         this.goToSearchedUserProfile();
+      },
+      { deep: true }
+    );
+
+    this.$watch(
+      "socket",
+      function () {
+        this.getNotificationFromSocket();
+      },
+      { deep: true }
+    );
+
+    this.$watch(
+      "updatedNotifications",
+      function () {
+        console.log(this.updatedNotifications[0], "UPDATED");
       },
       { deep: true }
     );
