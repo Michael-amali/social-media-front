@@ -57,13 +57,7 @@
       <v-menu left bottom offset-y>
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on" class="mr-4">
-            <v-badge
-              right
-              color="red"
-              class="hidden-sm-and-down"
-              offset-x="15"
-              offset-y="10"
-            >
+            <v-badge right color="red" class="" offset-x="15" offset-y="10">
               <span slot="badge">{{
                 updatedNotifications &&
                 updatedNotifications[0] &&
@@ -318,9 +312,13 @@ export default {
         .delete(`${BASE_URL}/api/notifications/${this.userId}`)
         .then((res) => {
           // Clearing all notifications from frontend
-          this.updatedNotifications[0].filter((n) => n.receiverId === this.userId)
+          this.updatedNotifications[0]
+            .filter((n) => n.receiverId === this.userId)
             .forEach((n) =>
-              this.updatedNotifications[0].splice(this.updatedNotifications[0].indexOf(n), 1)
+              this.updatedNotifications[0].splice(
+                this.updatedNotifications[0].indexOf(n),
+                1
+              )
             );
           console.log(res.data);
         })
