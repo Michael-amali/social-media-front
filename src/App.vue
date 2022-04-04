@@ -39,19 +39,5 @@ export default {
         .catch((err) => console.log(err));
     },
   },
-
-  // created() {
-  //   this.$watch(
-  //     () => this.$route.params,
-  //     () => {
-  //       this.googleSignIn();
-  //     },
-  //     { immediate: true }
-  //   );
-  // },
-
-  created() {
-    // this.googleSignIn();
-  },
 };
 </script>
