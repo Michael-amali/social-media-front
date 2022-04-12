@@ -810,9 +810,10 @@ export default {
           // resetting dialog decider
           this.editProfilePicBoolean = false;
 
-          this.snackBarText = res.data;
+          this.snackBarText = res.data.message;
           this.snackbar = true;
           this.snackbarColor = true;
+          this.$store.dispatch("updateCurrentUserInState", res.data);
           location.reload();
         })
         .catch((err) => {

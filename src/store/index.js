@@ -48,9 +48,9 @@ export default new Vuex.Store({
     setUserId({ commit }, data) {
       commit("SET_USER_ID", data);
     },
-    // updateCurrentUserInState({ commit }, user) {
-    //   commit("UPDATE_CURRENT_USER_IN_STATE", user);
-    // },
+    updateCurrentUserInState({ commit }, user) {
+      commit("UPDATE_CURRENT_USER_IN_STATE", user);
+    },
     clearCurrentUser({ commit }) {
       commit("CLEAR_CURRENT_USER");
     },

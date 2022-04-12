@@ -1,11 +1,11 @@
 <template>
   <div class="settings">
     <Navbar />
-    <v-container class="pa-15">
+    <v-container class="pa-0 pa-sm-10 pa-md-15">
       <template>
         <v-row justify="center">
           <v-expansion-panels accordion>
-            <v-expansion-panel>
+            <v-expansion-panel class="pa-0">
               <v-expansion-panel-header>
                 <v-row>
                   <v-col cols="12" class="pb-0 title">
@@ -20,7 +20,7 @@
               <v-expansion-panel-content>
                 <v-container>
                   <v-row>
-                    <v-col cols="12" sm="12" md="7">
+                    <v-col cols="12" sm="12" md="7" class="px-0 px-sm-2">
                       <v-text-field
                         label="Username"
                         name="username"
@@ -60,7 +60,7 @@
               <v-expansion-panel-content>
                 <v-container>
                   <v-row>
-                    <v-col cols="12" sm="12" md="7">
+                    <v-col cols="12" sm="12" md="7" class="px-0 px-sm-2">
                       <v-text-field
                         label="E-mail Address"
                         name="email"
@@ -184,10 +184,10 @@ export default {
         })
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
-            this.snackBarText = res.data;
+            this.snackBarText = res.data.messsage;
             this.snackbar = true;
             this.snackbarColor = true;
-            console.log(res.data, "update");
+            this.$store.dispatch("updateCurrentUserInState", res.data);
           }
         });
     },
@@ -200,13 +200,12 @@ export default {
         })
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
-            this.snackBarText = res.data;
+            this.snackBarText = res.data.message;
             this.snackbar = true;
             this.snackbarColor = true;
             // localStorage.setItem("email", this.computedCurrentUser.email);
             localStorage.setItem("username", this.username);
-            this.$store.state.currentUser.username = this.username;
-            console.log(res.data, "update");
+            this.$store.dispatch("updateCurrentUserInState", res.data);
           }
         });
     },
