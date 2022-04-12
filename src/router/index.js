@@ -11,6 +11,11 @@ import ResetPassword from "../views/ResetPassword.vue";
 import Settings from "../views/Settings.vue";
 import store from "../store/index";
 
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch((err) => err);
+};
+
 Vue.use(VueRouter);
 
 const routes = [
