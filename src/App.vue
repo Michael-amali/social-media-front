@@ -39,6 +39,7 @@ export default {
         .catch((err) => console.log(err));
     },
   },
-  computed: {}
+  computed: {},
+  mounted(){},
 };
 </script>
