@@ -9,6 +9,7 @@ import Messenger from "../views/Messenger.vue";
 import ForgotPassword from "../views/ForgotPassword.vue";
 import ResetPassword from "../views/ResetPassword.vue";
 import Settings from "../views/Settings.vue";
+import FileUploadPage from "../views/FileUploadPage.vue";
 import store from "../store/index";
 
 const originalPush = VueRouter.prototype.push;
@@ -89,6 +90,14 @@ const routes = [
     component: Settings,
     meta: {
       requiresAuth: true,
+    },
+  },
+  {
+    path: "/fileupload",
+    name: "FileUploadPage",
+    component: FileUploadPage,
+    meta: {
+      requiresAuth: false,
     },
   },
 ];
