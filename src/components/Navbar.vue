@@ -1,7 +1,7 @@
 <template>
   <div class="mt-16">
     <!-- Navbar -->
-    <v-app-bar color="blue-grey darken-2" flat dense dark height="65" fixed>
+    <v-app-bar color="blue-grey darken-2" flat dense dark height="65" fixed app>
       <v-app-bar-nav-icon
         @click="mini = !mini"
         v-show="$vuetify.breakpoint.smAndDown"
