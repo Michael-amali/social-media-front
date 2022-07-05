@@ -1,6 +1,6 @@
 <template>
   <div class="file-upload">
-    <!-- <div>
+    <div>
       <div class="container">
         <h1>This is an file upload</h1>
         <form>
@@ -14,11 +14,22 @@
               >Upload</v-btn
             >
           </div>
+          <div style="width: 40%; margin-top: 4px">
+            <v-text-field
+              name="text"
+              v-model="textData"
+              type="text"
+              color="primary"
+              outlined
+              label="type something"
+              required
+            ></v-text-field>
+          </div>
         </form>
       </div>
-    </div> -->
+    </div>
     <div>
-      <div class="text-center ">Demo</div>
+      <div class="text-center">Demo</div>
       <lottie :options="defaultOptions" :width="500" :height="500" />
     </div>
   </div>
@@ -38,6 +49,7 @@ export default {
   data() {
     return {
       files: null,
+      textData: "",
 
       defaultOptions: {
         animationData: animationData.default,
