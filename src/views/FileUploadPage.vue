@@ -68,16 +68,9 @@ export default {
         formData.append("files[" + i + "]", file);
       }
 
-      axios
-        .post(
-          `${BASE_URL}/api/upload-cloud`,
-          formData,
-          {},
-          { credentials: true, origin: true }
-        )
-        .then((res) => {
-          console.log(res);
-        });
+      axios.post(`${BASE_URL}/api/upload-cloud`, formData, {}).then((res) => {
+        console.log(res);
+      });
     },
   },
 };
