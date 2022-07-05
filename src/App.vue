@@ -13,6 +13,10 @@ import axios from "axios";
 import { setAuthToken, setUserId } from "./services/auth";
 import { BASE_URL } from "../env";
 
+import introJS from "intro.js";
+import "intro.js/introjs.css";
+import "intro.js/minified/introjs.min.css";
+
 export default {
   name: "App",
 
@@ -40,6 +44,8 @@ export default {
     },
   },
   computed: {},
-  mounted(){},
+  mounted(){
+    introJS().start();
+  },
 };
 </script>
