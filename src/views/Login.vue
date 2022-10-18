@@ -180,7 +180,7 @@ export default {
             this.$store.dispatch("setCurrentUserInState", res.data);
             this.$store.dispatch("setIsLoggedIn", res.data);
             this.$store.dispatch("setUserId", res.data);
-            // this.$store.commit("SET_USER_ROLE_IN_STATE", res.data);
+            /**  this.$store.commit("SET_USER_ROLE_IN_STATE", res.data);*/
             localStorage.setItem("token", res.data.accessToken);
             localStorage.setItem("email", res.data.email);
             localStorage.setItem("username", res.data.username);
@@ -194,7 +194,9 @@ export default {
           }
         })
         .catch((err) => {
-          let errorMsg = err.response.data;
+          let errorMsg = err.response
+            ? err.response.data
+            : "An unexpected error occurred";
           this.snackbar = true;
           this.snackBarText = `${errorMsg}`;
           this.loginLoader = false;
