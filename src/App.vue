@@ -44,7 +44,7 @@ export default {
     },
   },
   computed: {},
-  mounted(){
+  mounted() {
     introJS().start();
   },
 };
