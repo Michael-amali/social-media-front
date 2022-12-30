@@ -6,13 +6,13 @@
           <v-form ref="loginForm" v-model="loginFormValid" lazy-validation>
             <v-card-text>
               <v-container>
-                <div class="d-flex justify-center mb-10">
+                <!-- <div class="d-flex justify-center mb-10">
                   <a
                     class="login-with-google-btn"
                     href="https://social-media-myk.herokuapp.com/auth/google"
                     >Sign in with Google</a
                   >
-                </div>
+                </div> -->
 
                 <v-card-text class="text-center pa-0 text-h6 mb-6">
                   Login with your credentials
@@ -165,14 +165,10 @@ export default {
       if (!this.$refs.loginForm.validate()) return;
       this.loginLoader = true;
       axios
-        .post(
-          `${BASE_URL}/api/auth/login`,
-          {
-            email: this.loginEmail,
-            password: this.loginPassword,
-          },
-          { withCredentials: true }
-        )
+        .post(`${BASE_URL}/api/auth/login`, {
+          email: this.loginEmail,
+          password: this.loginPassword,
+        })
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             setAuthToken(res.data.accessToken);

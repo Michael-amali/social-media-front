@@ -267,7 +267,7 @@ export default {
       logoutUser();
       localStorage.clear();
       axios
-        .get(`${BASE_URL}/api/auth/logout`, { withCredentials: true })
+        .get(`${BASE_URL}/api/auth/logout`)
         .then((res) => {
           console.log(res.data);
         })
