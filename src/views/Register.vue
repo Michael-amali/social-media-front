@@ -160,15 +160,11 @@ export default {
     register() {
       this.registerLoader = true;
       axios
-        .post(
-          `${BASE_URL}/api/auth/register`,
-          {
-            username: this.signUpName,
-            email: this.signUpEmail,
-            password: this.signUpPassword,
-          },
-          { withCredentials: true }
-        )
+        .post(`${BASE_URL}/api/auth/register`, {
+          username: this.signUpName,
+          email: this.signUpEmail,
+          password: this.signUpPassword,
+        })
         .then((res) => {
           if (res.status >= 200 && res.status < 400) {
             this.snackbarColor = true;

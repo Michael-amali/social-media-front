@@ -1,7 +1,7 @@
 <template>
   <div class="mt-16">
     <!-- Navbar -->
-    <v-app-bar color="blue-grey darken-2" flat dense dark height="65" fixed app>
+    <v-app-bar color="blue-grey darken-2" flat dense dark height="65" fixed>
       <v-app-bar-nav-icon
         @click="mini = !mini"
         v-show="$vuetify.breakpoint.smAndDown"
@@ -267,7 +267,7 @@ export default {
       logoutUser();
       localStorage.clear();
       axios
-        .get(`${BASE_URL}/api/auth/logout`, { withCredentials: true })
+        .get(`${BASE_URL}/api/auth/logout`)
         .then((res) => {
           console.log(res.data);
         })

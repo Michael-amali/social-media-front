@@ -27,7 +27,7 @@ export default {
   methods: {
     googleSignIn() {
       axios
-        .get(`${BASE_URL}/login/success`, { withCredentials: true })
+        .get(`${BASE_URL}/login/success`)
         .then((res) => {
           console.log(res.data);
           setAuthToken(res.data.accessToken);
@@ -44,7 +44,7 @@ export default {
     },
   },
   computed: {},
-  mounted(){
+  mounted() {
     introJS().start();
   },
 };
