@@ -696,6 +696,7 @@ export default {
           let found = this.notifications.find((n) => {
             return n.senderId === res.data.senderId;
           });
+          // A Check to prevent having two notifications from one person
           if (!found) {
             this.notifications.push(res.data);
           }
